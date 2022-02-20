@@ -22,7 +22,7 @@
  '(custom-safe-themes
    '("77c16fe29860c6fc12cde892d6e3051c740a7b3781c988aeb4df9743f4a24e0d" default))
  '(package-selected-packages
-   '(company lsp-ui exec-path-from-shell go-mode dracula-theme use-package org-roam org)))
+   '(vertico helm shx dired-sidebar company lsp-ui exec-path-from-shell go-mode dracula-theme use-package org-roam org)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -34,13 +34,16 @@
   :ensure t
   :custom
   (org-roam-directory (file-truename "/Users/hang.gao/org-files"))
+  (org-roam-completion-everywhere t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture)
          ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
+         ("C-c n j" . org-roam-dailies-capture-today)
+	 :map org-mode-map
+	 ("C-M-i" . completion-at-point))
   :config
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
@@ -171,7 +174,7 @@
 (global-set-key [M-down] 'windmove-down)          ; move to lower window
 
 ;; set default fullscreen
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 
 ;; golang setup
@@ -206,3 +209,35 @@
   (setq exec-path-from-shell-variables '("PATH" "GOPATH"))
   (exec-path-from-shell-initialize))
 
+;; display line number
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+;; delete end of line space
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; auto refresh buffer
+(global-auto-revert-mode t)
+
+
+;; dired setup
+(use-package dired
+  :eunsure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "=-agho --group-directories-first"))
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+			      "h" 'dired-up-directory
+			      "l" dired-find-file))
+
+
+(use-package vertico
+  :ensure t
+  :bind (:map vertico-map
+	      ("C-j" . vertico-next)
+	      ("C-k" . vertico-previous)
+	      ("C-f" . vertico-exit)
+	      )
+
+  :custom
+  (vertico-cycle t)
+  :init
+  (vertico-mode))
