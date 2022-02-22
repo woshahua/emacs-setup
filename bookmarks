@@ -13,8 +13,8 @@
  (rear-context-string)
  (position . 1))
 ("org-capture-last-stored"
- (filename . "~/org-files/20220218165040-gorm.org")
+ (filename . "~/org-files/20220220171059-magit.org")
  (front-context-string)
- (rear-context-string . ":\n#+title: gorm\n")
- (position . 82))
+ (rear-context-string . "\n#+title: magit\n")
+ (position . 83))
 )

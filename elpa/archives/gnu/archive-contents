@@ -803,7 +803,7 @@
 	      (:maintainer "Markus Triska" . "triska@metalevel.at")
 	      (:url . "https://www.metalevel.at/ediprolog/"))])
  (eev .
-      [(20220212)
+      [(20220218)
        ((emacs
 	 (24 4)))
        "Support for e-scripts (eepitch blocks, elisp hyperlinks, etc)" tar
@@ -812,7 +812,7 @@
 	(:maintainer "Eduardo Ochs" . "eduardoochs@gmail.com")
 	(:authors
 	 ("Eduardo Ochs" . "eduardoochs@gmail.com"))
-	(:commit . "abadb863afdd7876aeaa1662af014e6a5e212985"))])
+	(:commit . "b25aa1b3ad4026e3d1c23d8f5148a8bc3b0ada56"))])
  (eglot .
 	[(1 8)
 	 ((emacs
@@ -2065,7 +2065,7 @@
 	    ("Junpeng Qiu" . "qjpchmail@gmail.com"))
 	   (:keywords "extensions"))])
  (parser-generator .
-		   [(0 1 4)
+		   [(0 1 5)
 		    ((emacs
 		      (26)))
 		    "Parser Generator library" tar
@@ -2074,7 +2074,7 @@
 		     (:maintainer "Christian Johansson" . "christian@cvj.se")
 		     (:authors
 		      ("Christian Johansson" . "christian@cvj.se"))
-		     (:commit . "e2e464bb1771d60afb7ab44e21fb7477425563e2"))])
+		     (:commit . "bf7229332f7040d49fdac56e54da13d73752395d"))])
  (path-iterator .
 		[(1 0)
 		 ((emacs
@@ -2815,6 +2815,17 @@
 	  (:authors
 	   ("Kai Großjohann" . "kai.grossjohann@gmx.net"))
 	  (:commit . "974db74a36729d67dc758301e1cc9341396c79d9"))])
+ (tramp-nspawn .
+	       [(1 0)
+		((emacs
+		  (23)))
+		"Tramp integration for systemd-nspawn containers" tar
+		((:url . "https://github.com/bjc/tramp-nspawn")
+		 (:keywords "tramp" "nspawn" "machinectl" "systemd" "systemd-nspawn")
+		 (:maintainer "Brian Cully" . "bjc@kublai.com")
+		 (:authors
+		  ("Brian Cully" . "bjc@kublai.com"))
+		 (:commit . "b8380ee8a7c15ad4b96963d224969fc1a0337180"))])
  (tramp-theme .
 	      [(0 2)
 	       ((emacs
