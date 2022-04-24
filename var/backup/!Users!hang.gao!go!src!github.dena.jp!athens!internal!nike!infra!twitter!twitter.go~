@@ -1,0 +1,75 @@
+package twitter
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/dghubble/sling"
+	"github.com/pkg/errors"
+	"github.dena.jp/DL/athens/internal/nike/config"
+	"github.dena.jp/DL/athens/internal/nike/domain"
+	ksling "github.dena.jp/DL/athens/pkg/sling"
+	"github.dena.jp/DL/rosetta/log"
+)
+
+type twitterRepo struct {
+	sling    *sling.Sling
+	apiToken string
+}
+
+func newTwitterRepo() domain.TwitterRepository {
+	conf := config.MustConfig().Twitter
+	return &twitterRepo{
+		sling:    ksling.MustDefaultSling(conf.ApiURL, false),
+		apiToken: conf.ApiBearerToken,
+	}
+}
+
+type fetchAccountRequest struct {
+	OptionalUserFields string `url:"user.fileds"`
+}
+
+type fetchAccountResponse struct {
+	Data accountData `json:"data"`
+}
+
+type accountData struct {
+	UserName      string         `json:"username"`
+	PublicMetrics *publicMetrics `json:"public_metrics"`
+}
+
+type publicMetrics struct {
+	FollowersCount int `json:"followers_count"`
+}
+
+const (
+	optionalPublicMetrics = "public_metrics" // フォロワー数取得のため
+)
+
+func (t twitterRepo) FindAccountByName(ctx context.Context, accountName string) (*domain.TwitterAccount, error) {
+	path := fmt.Sprintf("/2/users/by/username/%s", accountName)
+	log.Ctx(ctx).Info().Msgf("get twitter account, path[%s]", path)
+
+	var resng interface{}
+	res := fetchAccountResponse{}
+	// TODO
+	req := fetchAccountRequest{OptionalUserFields: optionalPublicMetrics}
+	resp, err := t.sling.New().Set("Authorization", fmt.Sprintf("Bearer %s", t.apiToken)).QueryStruct(req).Get(path).Receive(&res, &resng)
+
+	if err != nil {
+		return nil, errors.Wrapf(err, "fetch twitter account: [%s]", accountName)
+	}
+
+	if resng != nil {
+		return nil, errors.Errorf("unexpected response status[%d], detail[%+v]", resp.StatusCode, resng)
+	}
+
+	if res.Data.PublicMetrics == nil {
+		return nil, errors.Errorf("should set public metrics, response[%+v]", res)
+	}
+
+	return &domain.TwitterAccount{
+		Name:           res.Data.UserName,
+		FollowersCount: res.Data.PublicMetrics.FollowersCount,
+	}, nil
+}

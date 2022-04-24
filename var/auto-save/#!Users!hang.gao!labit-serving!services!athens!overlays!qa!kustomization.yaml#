@@ -1,0 +1,283 @@
+GgAPIVERSIuuuvvvvvvv.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+patchesJson6902:
+- target:
+    group: serving.knative.dev
+    version: v1
+    kind: Service
+    name: athens
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/serviceAccountName
+      value: 'athens-runner@dena-desc-dl-labit-qa-gcp.iam.gserviceaccount.com'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: AKROS_JWT_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-jwt-secret-key'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_DB_HOST, 'value': '10.3.16.2'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_DB_PORT, 'value': '5432'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: ARTEMIS_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-artemis-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: OLYMPIA_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-olympia-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: PARTHENON_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-parthenon-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: POSEIDON_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-poseidon-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: DELPHI_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-delphi-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-nike-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: APOLLO_DB_PW
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-apollo-db-password'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_REDIS_HOST, 'value': '10.117.122.108'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_REDIS_PORT, 'value': '6379'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_GCP_PROJECT_ID, 'value': 'dena-desc-dl-labit-qa-gcp'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_URL, 'value': 'https://athens-oaye6jr6uq-an.a.run.app'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': ATHENS_MAILER_SENDER_ADDRESS, 'value': 'no-reply@caradamo.io'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': NIKE_AWS_SES_ACCESS_KEY_ID, 'value': 'AKIA5XTAKFATRHCQJIMA'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_AWS_SES_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-ses-secret-access-key'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': PARTHENON_CALOMEAL_API_HOST_URL, 'value': 'https://test-api.calomeal.com'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: PARTHENON_CALOMEAL_API_ACCESS_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-calomeal-api-access-token'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value: { 'name': NIKE_ZENDESK_URL, 'value': 'https://eisaidena1590117059.zendesk.com'}
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_ZENDESK_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-nike-zendesk-api-token'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_MODEL_CRYPTO_DEK
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit_model_crypto_dek'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: OLYMPIA_MODEL_CRYPTO_DEK
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit_model_crypto_dek'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: OLYMPIA_MODEL_CRYPTO_IV
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit_model_crypto_iv'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: ATHENS_SENTRY_ENVIRONMENT
+        value: qa
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_DB_EXPORT_BUCKET
+        value: dena-dl-labit-qa-bq
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_APOLLO_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-apollo-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_ARTEMIS_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-artemis-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_DELPHI_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-delphi-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_NIKE_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-nike-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_OLYMPIA_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-olympia-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_PARTHENON_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-parthenon-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: THEBES_POSEIDON_DSN
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-thebes-poseidon-dsn'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: ATHENS_ASSETS_HOST
+        value: https://qa.assets.caradamo.jp
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_ZENDESK_BRAND_ID
+        value: '900000388723'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_ZENDESK_CUSTOM_FIELD_FS_PATH
+        value: inquiry_custom_fields_sandbox.yaml
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_INTERNAL_STORAGE_BUCKET
+        value: dena-dl-labit-qa-internal
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: NIKE_AGREEMENT_FS_PATH
+        value: agreement_development.yaml
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+      name: NIKE_TWITTER_BEARER_TOKEN, 'value': 'secmgr:projects/228535433834/secrets/labit-nike-twitter-bearer-token/versions/1'}
+      valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-cxd-s3-secret-key'
+ 
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: KNOSSOS_AWS_S3_BUCKET
+        value: cdp-vs3-affinity
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: KNOSSOS_AWS_S3_ACCESS_KEY_ID
+        value: AKIA2AAQIM2XGVQX6ZXV
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: KNOSSOS_AWS_S3_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            key: '1' # version
+            name: 'labit-cxd-s3-secret-key'
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: KNOSSOS_PGP_PUB_KEY
+        value: data/cxd_gpg_public_qa_202111.asc
+images:
+  - name: athens
+    newName: gcr.io/dena-desc-dl-labit-infra-gcp/athens
+    newTag: v1.4.6-rc1

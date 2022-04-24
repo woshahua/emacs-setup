@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+project=dena-desc-dl-labit-dev-gcp
+
+cd `dirname $0`
+. ../../../scripts/gcp/project/check_valid_project.sh $project
+
+gcloud logging sinks create twitter-account \
+    bigquery.googleapis.com/projects/$project/datasets/twitter_account \
+    --use-partitioned-tables \
+    --log-filter 'resource.type="cloud_run_revision" AND resource.labels.service_name="athens" AND jsonPayload.biz_event.name="twitter_account"'

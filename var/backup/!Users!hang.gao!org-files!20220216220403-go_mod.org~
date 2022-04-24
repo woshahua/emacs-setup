@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       1F65ABDD-0D8F-445F-8860-63473DA184DD
+:END:
+#+title: go-mod
+
+
+** update
+- go get -u {path}

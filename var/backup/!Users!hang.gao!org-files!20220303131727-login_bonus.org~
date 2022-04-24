@@ -1,0 +1,89 @@
+:PROPERTIES:
+:ID:       4BECC2E8-798F-4B7D-B586-71567DDD172B
+:END:
+#+title: login-bonus
+
+
+* basic
+** 処理の流れ
+- ~POST /v1/users/{user_id}/login_bonus~
+  -> 成功した場合 -> responseがnil -> クライアント側は何もしない
+                               -> responseがnilではない -> ログインボーナスのダイアログを表示する
+
+ -> 成功した場合サーバ側の内部処理 -> ログイン状態確認 -> ログイン連続日付切り上げ・リセット処理 -> インセンティブ付与処理 -> 成功した場合にsuccessを返す.
+
+- ~GET /v1/users/{user_id}/login_bonus_account~
+  -> ログインボーナスダイアログが表示された際に叩く
+
+
+** ログイン状態の確認
+*** 今日初めてのログイン
+- 連続ログイン日数の更新作業 -> インセンティブを付与する -> 成功したらログイン日付を返す
+
+*** 今日すでにログイン済み
+- nil返すだけ
+
+** インセンティブ付与
+***  付与するインセンティブのtype
+- point
+- item
+
+*** インセンティブ付与の処理
+- ポイントとアイテムのの付与は別々の処理にする。
+
+
+
+* API
+- POST /login_bonus
+#+begin_src js
+  {
+    "login_date": "2022/02/22",
+  }
+#+end_src
+
+- GET /login_bonus_account
+  #+begin_src js
+    {
+        "point_amount": 30,
+        "user_login_count": 10,
+        "period_day_count": 15,
+    }
+  #+end_src
+
+
+* DB
+- [[id:88B610C8-D538-44D6-889F-5FAC11FE7F1F][login-bonus-db]]
+* domain
+#+begin_src go
+  type Account struct {
+          ID string
+          UserID string
+          ContinuousLoginCount int
+          LastLoginDate time
+  }
+  // LastLoginDate -> check didLogined today
+#+end_src
+
+* notice
+** 日付判断
+- 31日 / 15日以前 -> return 15
+- 31日 / 15 after -> return 16
+- 30 / 15 before -> return 15
+- 30 / 15 after -> return 15
+- 28 / 15 after -> return 13
+- 29 / 15 -> 14
+
+* Problems
+** 着せ替えitem
+1. 現状着せ替えアイテムが無いの -> 着せ替えを待つとログインボーナスと着せ替えのリリースが一緒になる。-> 遅れる
+   1. ログインボーナスだけ単体でリリースする（クライアントとサーバーで）
+   2. ポイントの消費、獲得アイテムの着せ替えなどはあとでやる
+
+2. そもそも体部品の着せ替えできないかも？
+   1. 体以外の着せ替えは可能 -> サーバ側からどんなresposneが必要かは不明
+   2. 体部分の着せ替えはできない可能性が高い -> 検討が必要
+
+
+- itemの所持数上限はあるか
+- 同じアイテムを複数所持することはあるか
+- アイテムを削除することはあるか

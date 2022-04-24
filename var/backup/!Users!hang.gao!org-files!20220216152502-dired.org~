@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       041A349A-3F73-4E69-9571-24D33F3E5C97
+:END:
+#+title: dired
+
+** cmd
+
+- shift + Enter: open current file in another buffer

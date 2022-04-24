@@ -1,0 +1,55 @@
+:PROPERTIES:
+:ID:       1E8FAE25-4BAF-4FB0-9A3E-98D6D7CC1B33
+:END:
+#+title: minutes-work
+
+* Task
+** DONE 登録時のユーザーID指定の部分に注釈を追加
+CLOSED: [2022-03-10 Thu 22:39]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-10 Thu 22:39]
+:END:
+- EPIC: https://www.notion.so/minute-s/ID-7f813dc7984f44a5823a4e9fbe3f06d0
+
+
+** TODO LiveTypeにfollowedを追加
+https://www.notion.so/minute-s/LiveType-followed-f4dc1b88fce94e0993b1aa48580a05c7?d=4224dfff3bfa49d283ccc97716383e95
+
+* TODO
+- [x] github権限付与
+- [x] figma権限付与
+- [ ] 環境構築 ->[[id:992C81FD-E8A1-4415-89BF-B580583BE829][minutes-flutter-build]]
+  - [ ] flutter build
+  - [ ] serverのローカル起動？（dev使えたら最高）
+
+- [ ] 最初のタスク確認
+https://www.notion.so/minute-s/6b9ac82e7fdd45f3a6c2929e74f99d97
+
+
+** Task
+- https://www.notion.so/minute-s/1c8493a7ced3403eac9e754eeaef62cc?v=c20335f9a06d4335aee1a916a8dd2388
+
+
+** 日報
+- task
+- 次稼働日
+
+** 稼働時間
+- timesでつぶやく
+- spreadsheetで勤怠登録
+  - https://docs.google.com/spreadsheets/d/1a6jGZO9fWX_raaV5i12g-W0oeF4yfac_XkdvtcthHCg/edit#gid=1312740141
+
+
+** 進め方
+
+- 1 ~ 2ヶ月、開発を行いつつミニッツの事業への解像度を上げる
+- 開発のキャッチアップ（ハンさん）
+- いくつか開発進める（ハンさん）
+- 現状のプロダクトの状況の説明（長谷川）
+- 課題に対する企画・仕様を詰める（ハンさん)
+
+
+
+- flutter pod install hangs
+  https://phongyewtong.medium.com/how-to-fix-flutter-stuck-at-running-pod-install-when-run-578ad867774
+  - pod setup -> pod install inside ios directory -> solved

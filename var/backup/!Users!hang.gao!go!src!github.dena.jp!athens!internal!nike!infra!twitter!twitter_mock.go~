@@ -1,0 +1,20 @@
+package twitter
+
+import (
+	"context"
+
+	"github.dena.jp/DL/athens/internal/nike/domain"
+)
+
+type twitterRepoMock struct{}
+
+func newTwitterMockRepo() domain.TwitterRepository {
+	return &twitterRepo{
+}
+
+func (t twitterRepoMock) FindAccountByUserName(ctx context.Context, accountName string) (*domain.TwitterAccount, error) {
+	return &domain.TwitterAccount{
+		Name:           accountName,
+		FollowersCount: 100,
+	}, nil
+}

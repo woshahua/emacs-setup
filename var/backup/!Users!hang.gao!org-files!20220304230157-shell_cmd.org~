@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       D4BA0659-7C36-45F7-AC43-4F928283C49A
+:END:
+#+title: shell-cmd
+
+** cmd
+- pbcopy
+  - usage: cat a.text | pbcopy

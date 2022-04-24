@@ -1,0 +1,51 @@
+# oh-my-zsh setup
+export ZSH="~/.oh-my-zsh"
+ZSH_THEME="cypher"
+
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+export PATH=${JAVA_HOME}/bin:$PATH
+
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git svn
+# This line obtains information from the vcs.
+zstyle ':vcs_info:git*' formats "- (%b) "
+precmd() {
+    vcs_info
+}
+
+# Enable substitution in the prompt.
+setopt prompt_subst
+
+# Config for the prompt. PS1 synonym.
+prompt='%2/ ${vcs_info_msg_0_}> '
+
+
+# config for autocompletion
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+export PATH=$PATH:$(go env GOPATH)/bin
+GOPATH=$HOME/go
+
+export PATH=$PATH:/opt/homebrew/Cellar/libpq/14.1/bin
+code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+
+
+# alias
+alias gohome='cd ~/go/src/github.dena.jp/'
+alias gst='git status'
+alias gp='git push'
+alias ga='git add'
+alias grsh='git reset --soft HEAD^'
+alias home='cd ~/'
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/hang.gao/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/hang.gao/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/hang.gao/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/hang.gao/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+export PATH=$PATH:/usr/local/opt/coreutils/libexec/gnubin
+
+export PATH="$PATH:`pwd`/flutter/bin"
+
+export PATH=$HOME/.rbenv/bin:$PATH

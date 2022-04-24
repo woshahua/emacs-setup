@@ -1,0 +1,29 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch feature/login-bonuses
+# Your branch is up to date with 'origin/master'.
+#
+# Changes to be committed:
+#	new file:   internal/apollo/domain/concerige_item.go
+#	new file:   internal/apollo/domain/user_coin_history.go
+#	new file:   internal/apollo/domain/user_login_history.go
+#	new file:   internal/apollo/infra/dborm/user_login_history.go
+#
+# Changes not staged for commit:
+#	modified:   deployments/athens/overlays/dev/kustomization.yaml
+#
+# Untracked files:
+#	.env~
+#	internal/akros/cmd/#cmd.go#
+#	internal/nike/application/internal_cmd.go~
+#	internal/nike/domain/eeuid_user.go~
+#	internal/nike/domain/internal_cmd_service.go~
+#	internal/nike/domain/log_biz_event_service.go~
+#	internal/nike/domain/log_enquete_user_service.go~
+#	internal/nike/infra/storage/internal_cmd.go~
+#	internal/nike/infra/storage/storage.go~
+#	internal/nike/interface/http/internal_cmd.go~
+#	test/e2e/nike/internal_cmd_suite.go~
+#

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+project=dena-desc-dl-labit-dev-gcp
+
+cd `dirname $0`
+. ../../../scripts/gcp/project/check_valid_project.sh $project
+
+# 分析プロジェクトのサービスアカウントとメンバーに権限を付与
+gcloud projects add-iam-policy-binding $project \
+  --member="serviceAccount:496766251358-compute@developer.gserviceaccount.com" \
+  --role="roles/bigquery.admin"
+gcloud projects add-iam-policy-binding $project \
+  --member="user:mikio.maeda@dena.jp" \
+  --role="roles/bigquery.admin"
+gcloud projects add-iam-policy-binding $project \
+  --member="user:takayuki.tanaka@dena.jp" \
+  --role="roles/bigquery.admin"
+gcloud projects add-iam-policy-binding $project \
+  --member="user:yoshifumi.d.ito@dena.jp" \
+  --role="roles/bigquery.admin"
+gcloud projects add-iam-policy-binding $project \
+  --member="user:shiori.goshima@dena.com" \
+  --role="roles/bigquery.admin"
+gcloud projects add-iam-policy-binding $project \
+  --member="user:isamu.a.ishikawa@dena.com" \
+  --role="roles/bigquery.admin"
+gcloud projects add-iam-policy-binding $projectq
+  --member="user:ryosuke.sato@dena.com" \
+  --role="roles/bigquery.admin"

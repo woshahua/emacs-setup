@@ -1,0 +1,10 @@
+:PROPERTIES:
+:ID:       790A3544-91D1-4EC2-AD26-1278464D5979
+:END:
+#+title: react
+
+* tools
+- npm: nodejs package manager?
+- yarn: another package manager like npm (what is the diff)
+- vite? https://vitejs.dev/
+- channel_talk -> お問い合わせのsaas https://channel.io/ja

@@ -1,0 +1,3 @@
+app_identifier("jp.labit.dev") # The bundle identifier of your app
+apple_id("hang.gao@dena.com") # Your Apple email address
+team_id("M25CN8256B") # Developer Portal Team ID

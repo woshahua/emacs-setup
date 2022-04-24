@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       B097CCD6-BC7C-4841-86A3-0E0E88F74852
+:END:
+#+title: mac-cmd
+
+* cmd
+** change folder owner
+~chown -R username foldername~

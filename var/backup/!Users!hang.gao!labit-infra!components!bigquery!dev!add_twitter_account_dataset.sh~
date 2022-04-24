@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+project=dena-desc-dl-labit-dev-gcp
+
+cd `dirname $0`
+. ../../../scripts/gcp/project/check_valid_project.sh $project
+
+bq --location=asia-northeast1 mk \
+  --dataset \
+  --description "アンケート対象ユーザの情報" \
+ $project:enquete_users

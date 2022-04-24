@@ -1,0 +1,29 @@
+package application
+
+import (
+	"context"
+
+	"github.dena.jp/DL/rosetta/log"
+
+	"github.dena.jp/DL/athens/internal/nike/domain"
+)
+
+type TwitterLogService struct {
+	twitterRepo domain.TwitterRepository
+}
+
+func newTwitterLogService(repos domain.Repositories) TwitterLogService {
+	return TwitterLogService{
+		twitterRepo: repos.Twitter,
+	}
+}
+
+func (t TwitterLogService) LogAccount(ctx context.Context, name string) error {
+	account, err := t.twitterRepo.FindAccountByName(ctx, name)
+	if err != nil {
+		return err
+	}
+
+	log.MustLogBizEvent(log.Ctx(ctx).Info(), "twitter_log", domain.NewTwitterLogPayload(*account))
+	return nil
+}

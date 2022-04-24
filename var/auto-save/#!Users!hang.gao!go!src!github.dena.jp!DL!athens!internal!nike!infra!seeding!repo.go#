@@ -1,0 +1,65 @@
+package seeding
+
+import (
+	"context"
+	"embed"
+	"fmt"
+	"time"
+
+	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
+
+	"github.dena.jp/DL/athens/internal/nike/config"
+	"github.dena.jp/DL/athens/internal/nike/domain"
+)
+
+type seedingRepo struct {
+	fs            embed.FS
+	agreementConf config.Agreement
+}
+
+func newSeedingRepo(fs embed.FS, agreementConf config.Agreement) domain.SeedingRepository {
+	return &seedingRepo{
+		fs: fs,
+	}
+}
+
+type agreement struct {
+	Version     float64    `yaml:"version"`
+	URL         string     `yaml:"url"`
+	Description string     `yaml:"description"`
+	IsDisplay   bool       `yaml:"is_display"`
+	VisibleFrom *time.Time `yaml:"visible_from"`
+}
+
+func (s seedingRepo) LoadAgreement(ctx context.Context) (map[float64]*domain.Agreement, error) {
+	var agreements []agreement
+	if err := unmarshal(s.fs, &agreements, fmt.Sprintf("data/%s", s.agreementConf.FSPath)); err != nil {
+		return nil, errors.Wrap(err, "unmarshal agreements")
+	}
+	agreementMap := make(map[float64]*domain.Agreement, len(agreements))
+	for _, v := range agreements {
+		if _, ok := agreementMap[v.Version]; ok {
+			return nil, errors.Errorf("duplicated agreement: %+v", v)
+		}
+		do, err := domain.NewAgreement(v.Version, v.URL, v.Description, v.IsDisplay, v.VisibleFrom)
+		if err != nil {
+			return nil, err
+		}
+		agreementMap[do.Version] = do
+	}
+	return agreementMap, nil
+}
+
+func unmarshal(fs embed.FS, recv interface{}, path string) error {
+	bytes, err := fs.ReadFile(path)
+	if err != nil {
+		return errors.Wrapf(err, "read fs path[%s]", path)
+	}
+
+	if err := yaml.Unmarshal(bytes, recv); err != nil {
+		return errors.Wrapf(err, "unmarshal yaml by paths %s", path)
+	}
+
+	return nil
+}

@@ -1,0 +1,85 @@
+# logger
+export LOG_LEVEL=debug
+export LOG_PRETTY=true
+
+# gin
+export GIN_MODE=debug
+
+# GCP CREDENTIAL
+export GOOGLE_APPLICATION_CREDENTIALS=~/credential/labit_google_credentials.json
+export KYOTO_GCP_PROJECT_ID=dena-desc-dl-ue-dev
+
+# sentry
+export KYOTO_MONITOR_MOCK=false
+export KYOTO_SENTRY_DSN=https://5389518b9b2445efb28afbc3f9bb4433@o328695.ingest.sentry.io/5901468
+export KYOTO_SENTRY_ENVIRONMENT=local
+
+# http server
+export KYOTO_HTTP_HOST=localhost
+export KYOTO_HTTP_PORT=8080
+
+# DB
+export KYOTO_DB_HOST=192.168.0.106
+export KYOTO_DB_PORT=5432
+export KYOTO_DB_USER=kyoto
+export KYOTO_DB_PW=abcd0123
+
+# Redis
+export KYOTO_REDIS_HOST=192.168.0.106
+export KYOTO_REDIS_PORT=6379
+export KYOTO_REDIS_DB=0
+
+# MAILER
+export KYOTO_MAILER_MOCK=true
+
+## use .io domain when local
+export KYOTO_MAILER_SENDER_ADDRESS=no-reply@hareto-ke.io
+
+# AWS
+export KYOTO_AWS_SES_ACCESS_KEY_ID=access_key_id
+export KYOTO_AWS_SES_SECRET_ACCESS_KEY=_secret_access_key
+
+export ODAWARA_AWS_S3_BUCKET=s3_bucket_name
+export ODAWARA_AWS_S3_ACCESS_KEY_ID=access_key_id
+export ODAWARA_AWS_S3_SECRET_ACCESS_KEY=secret_access_key
+
+# Image
+export OSAKA_IMAGE_BUCKET=dena-dl-ue-sandbox-assets-public
+export OSAKA_IMAGE_USE_GCS_URL=true
+
+# internal_cmd
+export OSAKA_INTERNAL_STORAGE_BUCKET=dena-dl-ue-sandbox-internal
+
+# SAML Cookie secret
+# openssl rand -hex 32
+export YODO_COOKIE_HEX_HASH_KEY=c61354e05b07b2350a6a04bf9ecf7b6fa7361e1687419fe0394a6c42e9a761ea
+export YODO_OPE_BASE_URL=http://localhost:8000
+export YODO_SSO_MOCK=true
+# YODO_SAML_IDP_META_FS_PATH=data/idp_metadata_local.xml
+
+# key and iv for db encryption
+# openssl rand -hex 32
+export OSAKA_MODEL_CRYPTO_DEK=f4287cfc390eb9d610dd09b48292d6d74bc73fa2ee50200d19ab109289eccfcf
+# openssl rand -hex 12
+export OSAKA_MODEL_CRYPTO_IV=698edbb178012262125abd15
+
+# SNS
+export TSURUMARU_TWITTER_BEARER_TOKEN=twitter_api_bearer_token
+
+# zendesk
+export OSAKA_ZENDESK_MOCK=true
+export OSAKA_ZENDESK_TOKEN=whatever
+
+# tanabe
+export TANABE_DB_EXPORT_BUCKET=dena-dl-ue-sandbox-bq
+
+# JWT
+# openssl rand -hex 32
+export OSAKA_JWT_SECRET_KEY=e5c4408330edf9cd9133073134ec97b3a80148d6f717ad2994b090a5e18d4c1a
+
+# only for local development and e2e test
+export KYOTO_DB_NAME=kyoto
+export FUSHIMI_DB_SEARCH_PATH=fushimi,public
+export OSAKA_DB_SEARCH_PATH=osaka,public
+export CHIHAYA_DB_SEARCH_PATH=chihaya,public
+export ODAWARA_PGP_PUB_KEY=data/gpg_own_public_sandbox.asc

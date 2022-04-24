@@ -1,0 +1,16 @@
+:PROPERTIES:
+:ID:       204A9D04-47BB-48F8-80F0-F6F7F92D5851
+:END:
+#+title: fluentd
+
+
+** install
+https://docs.fluentd.org/installation/install-by-dmg
+- The configuration file is located at /etc/td-agent/td-agent.conf
+- The plugin directory is at /etc/td-agent/plugin
+
+
+
+** features
+*** send messages to slack
+- https://qiita.com/juve_534/items/5b38da5ebd5ddc711d03

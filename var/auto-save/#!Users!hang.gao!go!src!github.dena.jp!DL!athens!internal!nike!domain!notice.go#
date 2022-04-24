@@ -1,0 +1,67 @@
+package domain
+
+import (
+	"time"
+
+	"github.com/pkg/errors"
+	"github.dena.jp/DL/rosetta/validate"
+
+	"github.dena.jp/DL/athens/internal/nike/config"
+)
+
+type Notice struct {
+	ID          string
+	Alias       string `validate:"required,max=10"`
+	Title       string `validate:"required,max=50"`
+	Description string `validate:"required,max=100"`
+	ImageURL    string `validate:"required,max=512"`
+	Link        string `validate:"required,max=512"`
+	URLFixNonce string `validate:"omitempty,len=12"`
+	ExpiredAt   *time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+func NewNotice(alias, title, description, imageURL, link, nonce string,
+	expiredAt *time.Time) (*Notice, error) {
+	do := &Notice{
+		Alias:       alias,
+		Title:       title,
+		Description: description,
+		ImageURL:    imageURL,
+		Link:        link,
+		URLFixNonce: nonce,
+		ExpiredAt:   expiredAt,
+	}
+	if err := do.validate(); err != nil {
+		return nil, err
+	}
+	return do, nil
+}
+
+func (n Notice) URLWithEEUID(userID string) (string, error) {
+	if userID == "" {
+		return "", errors.New("user_id is empty")
+	}
+	if n.URLFixNonce == "" {
+		return n.Link, nil
+	}
+	return toURLWithEEUID(n.Link, userID, config.MustConfig().ModelCrypto.DEK, []byte(n.URLFixNonce))
+}
+
+func (n *Notice) setValue(do Notice) error {
+	n.Title = do.Title
+	n.Description = do.Description
+	n.ImageURL = do.ImageURL
+	n.Link = do.Link
+	n.URLFixNonce = do.URLFixNonce
+	n.ExpiredAt = do.ExpiredAt
+	return n.validate()
+}
+
+func (n Notice) validate() error {
+	if err := validate.Struct(n); err != nil {
+		return errors.Wrapf(err, "invalid notice[%+v]", n)
+	}
+	return nil
+}

@@ -1,0 +1,20 @@
+:PROPERTIES:
+:ID:       77808281-AEC8-4414-8191-F8367A6B62B8
+:END:
+#+title: gcloud
+
+** cmd
+
+- gcloud auth login: login
+- gcloud config set project PROJECT_ID: set projecdena-desc-dl-labit-dev-gcpt
+- gcloud auth print-identity-token: get token for api request
+
+*** attach read rights to bucket
+```
+gsutil iam ch serviceaccount:athens-runner@dena-desc-dl-labit-dev-gcp.iam.gserviceaccount.com:projects/dena-desc-dl-labit-dev-gcp/roles/labit.gcs.object.create gs://dena-dl-labit-dev-internal
+```
+*** features
+- [[id:95C66D20-28D2-4432-8F35-179976180D29][big-query]]
+
+
+SELECT jsonPayload.biz_event.payload.user_id, jsonPayload.biz_event.payload.eeuid FROM `dena-desc-dl-labit-dev-gcp.enquete_users.run_googleapis_com_stdout` WHERE jsonPayload.biz_event.payload.enquete_id = "ABCD012"

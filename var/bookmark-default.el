@@ -1,0 +1,35 @@
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("cofig"
+ (filename . "~/labit-serving/")
+ (front-context-string . "services\n  -rw-r")
+ (rear-context-string . "92 Mar  7 19:26 ")
+ (position . 479))
+("confgi"
+ (filename . "~/.zshrc")
+ (front-context-string . "zsh installation")
+ (rear-context-string . "h to your oh-my-")
+ (position . 22))
+("zshconfig"
+ (filename . "~/.zshrc")
+ (front-context-string . "\nautoload -Uz vc")
+ (rear-context-string . "HOME}/bin:$PATH\n")
+ (position . 85))
+("org-capture-last-stored"
+ (filename . "~/org-files/20220421160621-interview_1.org")
+ (front-context-string)
+ (rear-context-string . "le: interview-1\n")
+ (position . 89))
+("config"
+ (filename . "~/.emacs.d/init.el")
+ (front-context-string . "\n;; mela package")
+ (rear-context-string . "eight 'regular)\n")
+ (position . 515))
+("test"
+ (filename . "~/go/src/github.dena.jp/kyoto/internal/akou/application/outbound_traffic.go")
+ (front-context-string . "\nimport (\n	\"cont")
+ (rear-context-string . "age application\n")
+ (position . 21))
+)

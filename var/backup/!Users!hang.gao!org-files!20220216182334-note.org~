@@ -1,0 +1,34 @@
+:PROPERTIES:
+:ID:       93815EF1-DFE8-4D6D-907C-1E3A689125F3
+:END:
+#+title: note
+- ansible_sudo_pass
+
+
+** problem
+-  cmd: /usr/local/bin/brew cleanup --verbose, msg: '[Errno 2] No such file or directory'
+https://stackoverflow.com/questions/66112978/homebrew-with-m1-macbook-air-error-when-starting-terminals
+- mac m1ではインストール先のpathが違うので、path修正する必要がある
+
+- install rosetta before java install needed
+sudo softwareupdate --install-rosetta
+
+- 'There was an issue creating /usr/local/share as requested: [Errno 13] Permission denied: ''/usr/local/share'''
+
+-  ./bin/ansible-playbook ./site.yml -i ../setApper-vars-jenkins/hosts -t unity_hub
+
+  https://dena.cybozu.com/k/2168/show#record=727
+
+
+
+Creating launch runner in /Users/caradamo/Library/LaunchAgents/actions.runner._services.macstadium.plist
+Creating /Users/caradamo/Library/Logs/actions.runner._services.macstadium
+Creating /Users/caradamo/Library/LaunchAgents/actions.runner._services.macstadium.plist
+Creating runsvc.sh
+Creating .service
+svc install complete
+
+./svc.sh start
+starting actions.runner._services.macstadium
+Load failed: 5: Input/output error
+status actions.runner._services.macstadium:

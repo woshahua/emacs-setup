@@ -1,0 +1,50 @@
+package domain
+
+import (
+	"time"
+
+	"github.com/pkg/errors"
+	"github.dena.jp/DL/rosetta/validate"
+
+	"github.dena.jp/DL/athens/pkg/errs"
+)
+
+type UserNotice struct {
+	ID        string
+	UserID    string `validate:"required,xid"`
+	Notice    *Notice
+	ReadAt    *time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (u UserNotice) validate() error {
+	if err := validate.Struct(u); err != nil {
+		return errors.Wrapf(err, "invalid userNotice[%+v]", u)
+	}
+	return nil
+}
+
+func (u UserNotice) CheckOwnership(userID string) error {
+	if u.UserID == userID {
+		return nil
+	}
+	return errors.Errorf("user[%s] is not owner, user_notice[%+v]", userID, u)
+}
+
+func (u *UserNotice) Read() error {
+	if u.ReadAt != nil {
+		return errors.Wrapf(errs.StateConflictError, "user_notice[%s] already read", u.ID)
+	}
+
+	now := time.Now()
+	clone := *u
+	clone.ReadAt = &now
+
+	if err := clone.validate(); err != nil {
+		return err
+	}
+
+	
+	return nil
+}

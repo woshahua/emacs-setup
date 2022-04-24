@@ -1,0 +1,288 @@
+:PROPERTIES:
+:ID:       90D12F8D-CE16-4693-9170-3EB012717CD6
+:END:
+#+title: todo
+
+* DONE test
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE test cloudlogging
+CLOSED: [2022-02-20 Sun 23:31]
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE finish sentry
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE send interview email back
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE edit article wechat
+CLOSED: [2022-02-20 Sun 23:31]
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE announcement deploy to qa
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE push test insta live
+:PROPERTIES:
+:CREATED: [2022-02-16 Wed]
+:END:
+
+* DONE create labit reader role
+CLOSED: [2022-02-20 Sun 23:31]
+:PROPERTIES:
+:CREATED: [2022-02-17 Thu]
+:END:
+
+* TODO fluentd test
+:PROPERTIES:
+:CREATED: [2022-02-17 Thu]
+:END:
+
+* DONE questant implementation document
+CLOSED: [2022-02-20 Sun 23:31]
+:PROPERTIES:
+:CREATED: [2022-02-17 Thu]
+:END:
+
+* DONE fix fastlane file
+CLOSED: [2022-03-03 Thu 16:13]
+:PROPERTIES:
+:CREATED: [2022-02-18 Fri]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-03 Thu 16:13]
+:END:
+
+* DONE ios interviews
+CLOSED: [2022-02-21 Mon 16:44]
+:PROPERTIES:
+:CREATED: [2022-02-20 Sun]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-21 Mon 16:44]
+:END:
+
+* DONE enquete monthly
+CLOSED: [2022-02-21 Mon 13:30] DEADLINE: <2022-02-21 Mon 19:00>
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-21 Mon 13:30]
+:END:
+
+* DONE 作業時間集計
+CLOSED: [2022-02-21 Mon 16:49]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-21 Mon 16:49]
+:END:
+
+DEADLINE: <2022-02-21 Mon 19:00>
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+
+* DONE deploy questant
+CLOSED: [2022-02-21 Mon 16:44]
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-21 Mon 16:44]
+:END:
+
+* DONE ios申請
+CLOSED: [2022-02-21 Mon 18:16]
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-21 Mon 18:16]
+:END:
+
+* DONE check v1.4.0 google info right
+CLOSED: [2022-02-21 Mon 18:16]
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-21 Mon 18:16]
+:END:
+
+* DONE questant qa test
+CLOSED: [2022-02-25 Fri 13:40]
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-25 Fri 13:40]
+:END:
+
+* DONE code review 死活
+CLOSED: [2022-02-22 Tue 11:27]
+:PROPERTIES:
+:CREATED: [2022-02-21 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-22 Tue 11:27]
+:END:
+
+* DONE move between pane emacs
+CLOSED: [2022-02-25 Fri 13:40]
+:PROPERTIES:
+:CREATED: [2022-02-22 Tue]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-25 Fri 13:40]
+:END:
+- current method override the buffer move
+
+* DONE 年次個人研修
+CLOSED: [2022-02-28 Mon 12:58]
+:PROPERTIES:
+:CREATED: [2022-02-22 Tue]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-28 Mon 12:58]
+:END:
+
+* DONE 签证询问
+CLOSED: [2022-03-14 Mon 17:24]
+:PROPERTIES:
+:CREATED: [2022-02-23 Wed]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-14 Mon 17:24]
+:END:
+
+* DONE orgmode codeblock quik access
+CLOSED: [2022-03-03 Thu 17:14]
+:PROPERTIES:
+:CREATED: [2022-02-24 Thu]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-03 Thu 17:14]
+:END:
+
+* DONE コンプラ研修
+CLOSED: [2022-02-28 Mon 12:59]
+:PROPERTIES:
+:CREATED: [2022-02-24 Thu]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-28 Mon 12:59]
+:END:
+
+* TODO todomanagement improve
+:PROPERTIES:
+:CREATED: [2022-02-24 Thu]
+:END:
+
+* DONE questant運用wiki
+CLOSED: [2022-03-01 Tue 18:13]
+:PROPERTIES:
+:CREATED: [2022-02-25 Fri]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-01 Tue 18:13]
+:END:
+
+* DONE replace airpods
+CLOSED: [2022-03-01 Tue 10:48]
+:PROPERTIES:
+:CREATED: [2022-02-28 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-01 Tue 10:48]
+:END:
+
+* DONE 交通費精算
+CLOSED: [2022-02-28 Mon 20:49]
+:PROPERTIES:
+:CREATED: [2022-02-28 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-02-28 Mon 20:49]
+:END:
+
+* TODO qa certificates add
+:PROPERTIES:
+:CREATED: [2022-03-01 Tue]
+:END:
+
+* DONE fastlane: clean archieve file
+CLOSED: [2022-03-03 Thu 16:13]
+:PROPERTIES:
+:CREATED: [2022-03-01 Tue]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-03 Thu 16:13]
+:END:
+
+* DONE 家賃契約
+CLOSED: [2022-03-14 Mon 17:24]
+:PROPERTIES:
+:CREATED: [2022-03-07 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-14 Mon 17:24]
+:END:
+
+* DONE 飲み会申請
+CLOSED: [2022-03-14 Mon 17:24]
+:PROPERTIES:
+:CREATED: [2022-03-07 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-14 Mon 17:24]
+:END:
+
+* DONE Android Studio で保存時に自動フォーマットする機能もあるので使ってみてね
+CLOSED: [2022-03-14 Mon 17:24]
+:PROPERTIES:
+:CREATED: [2022-03-07 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-14 Mon 17:24]
+:END:
+
+* TODO 公開鍵の仕組み
+:PROPERTIES:
+:CREATED: [2022-03-07 Mon]
+:END:
+
+* DONE 契約更新
+CLOSED: [2022-03-14 Mon 17:24]
+:PROPERTIES:
+:CREATED: [2022-03-10 Thu]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-14 Mon 17:24]
+:END:
+
+* TODO add tech channel minutes
+:PROPERTIES:
+:CREATED: [2022-03-14 Mon]
+:END:
+
+* DONE set up spir
+CLOSED: [2022-03-22 Tue 12:17]
+:PROPERTIES:
+:CREATED: [2022-03-14 Mon]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-03-22 Tue 12:17]
+:END:

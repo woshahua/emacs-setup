@@ -1,0 +1,21 @@
+:PROPERTIES:
+:ID:       CB19517B-7151-4882-A073-6E54521D78A2
+:END:
+#+title: magit
+
+
+** doc
+https://magit.vc/manual/magit/Getting-Started.html
+** cmd
+- C-x g: show git infomation of current repo
+- C-g: abort operation
+
+** feature
+- forge
+  - need configure token before use
+  https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
+
+- annotate
+  - see the code edit history (git)
+** tasks
+*** BACKLOG set up forge auth

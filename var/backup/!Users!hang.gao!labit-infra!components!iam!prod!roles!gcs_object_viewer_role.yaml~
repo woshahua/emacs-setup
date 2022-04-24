@@ -1,0 +1,12 @@
+# roleごとのポリシーはドキュメントを参照
+# https://cloud.google.com/iam/docs/understanding-roles
+title: "LABIT GCS Object Viewer"
+name: "projects/dena-desc-dl-labit-dev-gcp/roles/labit.gcs.object.viewer"
+description: "GCSオブジェクト閲覧用のカスタムRole"
+etag: BwXYQNGdHE4=
+stage: "BETA"
+includedPermissions:
+- storage.buckets.get
+- storage.buckets.list
+- storage.objects.get
+- storage.objects.list

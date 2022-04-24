@@ -1,0 +1,37 @@
+:PROPERTIES:
+:ID:       DF44EBBD-F5AB-4599-9EF7-69FE1D5B42E8
+:END:
+#+title: flutter
+
+
+* tips
+- [[id:F5D305E7-2B8A-41F8-A84D-3265E5AA6FF5][flutter-app-header]]
+
+** cmd
+- ~flutter pub add -~ : add package
+- ~flutter pub get -~ : pull package to project
+
+** state
+- [[id:731AD001-FD24-409D-8884-7D171609D0A0][flutter-state]]
+
+
+** BuildContext
+https://zenn.dev/sugitlab/articles/606b658825792e
+
+
+
+** Widget
+*** statefulWidget
+
+
+** project structure
+*** services
+**** internal api
+****** client -> user-agent send on api request
+1. flavor
+
+
+
+* problems
+** flutter: cocoapods not found
+- not related to ruby version problem

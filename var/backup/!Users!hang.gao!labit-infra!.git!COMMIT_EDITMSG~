@@ -1,0 +1,12 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch twitter-log-resource-prod
+# Changes to be committed:
+#	modified:   components/bigquery/prod/add_policy_bq_users.sh
+#	modified:   components/pubsub/prod/create_subscriptions.sh
+#
+# Untracked files:
+#	components/scheduler/prod/;
+#

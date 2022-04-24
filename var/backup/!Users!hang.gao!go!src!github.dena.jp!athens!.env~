@@ -1,0 +1,93 @@
+# logger
+export LOG_LEVEL=debug
+export LOG_PRETTY=true
+
+# gin
+export GIN_MODE=debug
+
+# GCP CREDENTIALS
+export GOOGLE_APPLICATION_CREDENTIALS=~/credential/labit_google_credentials.json
+
+# http server
+export ATHENS_HTTP_HOST=localhost
+export ATHENS_HTTP_PORT=8080
+
+# sentry
+export ATHENS_MONITOR_MOCK=false
+export ATHENS_SENTRY_DSN=https://b8692cd69a3a42a2b08949025f5c0926@o328695.ingest.sentry.io/5925388
+export ATHENS_SENTRY_ENVIRONMENT=local
+
+# DB
+export ATHENS_DB_HOST=192.168.0.106
+export ATHENS_DB_PORT=5432
+export ATHENS_DB_USER=athens
+export ATHENS_DB_PW=abcd0123
+
+# key and iv for db encryption
+# openssl rand -hex 32
+export OLYMPIA_MODEL_CRYPTO_DEK=f4287cfc390eb9d610dd09b48292d6d74bc73fa2ee50200d19ab109289eccfcf
+export NIKE_MODEL_CRYPTO_DEK=f4287cfc390eb9d610dd09b48292d6d74bc73fa2ee50200d19ab109289eccfcf
+# openssl rand -hex 12
+export OLYMPIA_MODEL_CRYPTO_IV=698edbb178012262125abd15
+
+# Redis
+export ATHENS_REDIS_HOST=192.168.0.106
+export ATHENS_REDIS_PORT=6379
+export ATHENS_REDIS_DB=0
+
+# MAILER
+export ATHENS_MAILER_MOCK=true
+
+# INQUIRY
+export NIKE_INQUIRY_MOCK=true
+export NIKE_ZENDESK_API_TOKEN=whatever
+
+# PUSH
+export NIKE_PUSH_MOCK=true
+
+# JWT
+# openssl rand -hex 32
+export AKROS_JWT_SECRET_KEY=28555a0d9cbd19b9d80659e57f503534b6d18883a32f811a651b776d177e279f
+
+# GCP CREDENTIALS
+export ATHENS_GCP_PROJECT_ID=gcp-project-id
+
+# AWS set env when ATHENS_MAILER_MOCK = false
+export NIKE_AWS_SES_ACCESS_KEY_ID=access_key_id
+export NIKE_AWS_SES_SECRET_ACCESS_KEY=_secret_access_key
+
+export KNOSSOS_AWS_S3_MOCK=true
+export KNOSSOS_AWS_S3_BUCKET=s3_bucket_name
+export KNOSSOS_AWS_S3_ACCESS_KEY_ID=access_key_id
+export KNOSSOS_AWS_S3_SECRET_ACCESS_KEY=secret_access_key
+
+# only for local development and e2e test
+export ATHENS_DB_NAME=athens
+export OLYMPIA_DB_SEARCH_PATH=olympia,public
+export ARTEMIS_DB_SEARCH_PATH=artemis,public
+export DELPHI_DB_SEARCH_PATH=delphi,public
+export PARTHENON_DB_SEARCH_PATH=parthenon,public
+export POSEIDON_DB_SEARCH_PATH=poseidon,public
+export NIKE_DB_SEARCH_PATH=nike,public
+export APOLLO_DB_SEARCH_PATH=apollo,public
+export ATHENS_PUBSUB_MOCK=true
+export KNOSSOS_PGP_PUB_KEY=data/gpg_own_public_sandbox.asc
+
+# Calomeal
+export PARTHENON_CALOMEAL_API_HOST_URL=https://test-api.calomeal.com
+export PARTHENON_CALOMEAL_API_ACCESS_TOKEN=f4Euaz1Q5BgWdAitzv9BfUnMPM6oMyCaL7Mf0vtSs5BQiFUAQ0TvVDLtfys1qNmo # 記載サンプルはテスト環境用Token
+
+# Assets Host
+export ATHENS_ASSETS_HOST=https://assets.caradamo.jp
+
+# Thebes
+export THEBES_DB_EXPORT_BUCKET=dena-dl-labit-sandbox-bq
+
+# DB's DNS for analytics data export
+export THEBES_APOLLO_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=apollo,public host=localhost port=5432 user=athens"
+export THEBES_ARTEMIS_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=artemis,public host=localhost port=5432 user=athens"
+export THEBES_DELPHI_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=delphi,public host=localhost port=5432 user=athens"
+export THEBES_NIKE_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=nike,public host=localhost port=5432 user=athens"
+export THEBES_OLYMPIA_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=olympia,public host=localhost port=5432 user=athens"
+export THEBES_PARTHENON_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=parthenon,public host=localhost port=5432 user=athens"
+export THEBES_POSEIDON_DSN="password=abcd0123 dbname=athens sslmode=disable search_path=poseidon,public host=localhost port=5432 user=athens"

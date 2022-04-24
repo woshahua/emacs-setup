@@ -1,0 +1,28 @@
+:PROPERTIES:
+:ID:       47F8C098-3B07-45A8-9190-9D6631467CE3
+:END:
+#+title: cookie
+
+** cookie and session
+- http protocol is stateless, the server cant hold the state
+
+** how it work
+- ドメインが異なるサイトに対して、cookieは送信されない　( a.example.jpサーバーがSet-Cookieの際に, domain=example.comとしても、このcookieはブラウザに無視されます。)
+- 異なるドメインに対してcookieが設定できると、session idの固定化攻撃される可能性がある。
+- domain属性を指定しない場合、cookieを生成したサーバにのみcookieが送られる( this is the most safety case )
+- domain属性は通常設定しないもの
+- server-side set ~Set-Cookie~ on response header -> to let brower remember the id
+
+
+** requierment for session id
+1. other people cant guess
+2. not known by another people
+3.
+
+
+** cookie
+*** attrubutes
+- domain -> dont set it normally
+  - cookie monster bug
+- secure -> will only send on https
+- httpOnly -> set cookie cannot access from javascript

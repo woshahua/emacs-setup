@@ -1,0 +1,39 @@
+package http
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
+
+	"github.dena.jp/DL/athens/internal/nike/application"
+)
+
+type twitterHandler struct {
+	app application.TwitterService
+}
+
+func newTwitterHandler(app application.Services) *twitterHandler {
+	return &twitterHandler{
+		app: app.TwitterService,
+	}
+}
+
+type accountNameQuery struct {
+	AccountName string `form:"account_name" binding:"required"`
+}
+
+func (i twitterHandler) logTwitterAccount(c *gin.Context) {
+	var query accountNameQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(errResponse(c, err))
+		return
+	}
+
+	ctx := c.Request.Context()
+	if err := i.app.LogTwitterAccount(ctx, query.AccountName); err != nil {
+		// 失敗した場合でもackし、sentry通知する
+		_ = c.Error(errors.Wrap(err, "failed log twitter account"))
+	}
+	c.Status(http.StatusNoContent)
+}

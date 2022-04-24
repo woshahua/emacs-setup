@@ -1,0 +1,52 @@
+
+
+# Please enter the commit message for your changes. Lines starting
+
+#
+# On branch test-setup
+# Changes to be committed:
+#	modified:   elpa/archives/gnu/archive-contents
+#	modified:   elpa/archives/melpa/archive-contents
+#	deleted:    elpa/magit-section-20220101.841/dir
+#	deleted:    elpa/magit-section-20220101.841/magit-section-autoloads.el
+#	deleted:    elpa/magit-section-20220101.841/magit-section-pkg.el
+#	deleted:    elpa/magit-section-20220101.841/magit-section.el
+#	deleted:    elpa/magit-section-20220101.841/magit-section.elc
+#	deleted:    elpa/magit-section-20220101.841/magit-section.info
+#	modified:   init.el
+#
+# Untracked files:
+#	elpa/ace-window-20200606.1259/
+#	elpa/all-the-icons-20220117.108/
+#	elpa/annalist-20190929.207/
+#	elpa/avy-20220102.805/
+#	elpa/cfrs-20220129.1149/
+#	elpa/closql-20220216.1906/
+#	elpa/counsel-20211230.1909/
+#	elpa/doom-modeline-20220218.1547/
+#	elpa/doom-themes-20220216.1451/
+#	elpa/evil-collection-20220216.1857/
+#	elpa/forge-20220219.1546/
+#	elpa/ghub-20220216.2156/
+#	elpa/git-commit-20220130.2254/
+#	elpa/hydra-20220102.803/
+#	elpa/ivy-avy-20211021.1602/
+#	elpa/ivy-rich-20210409.931/
+#	elpa/lsp-ivy-20210904.2043/
+#	elpa/lsp-treemacs-20220102.1517/
+#	elpa/magit-20220221.2158/
+#	elpa/magit-section-20220216.1853/
+#	elpa/no-littering-20220210.1734/
+#	elpa/org-bullets-20200317.1740/
+#	elpa/pfuture-20211229.1513/
+#	elpa/posframe-20220124.859/
+#	elpa/rainbow-delimiters-20210515.1254/
+#	elpa/shrink-path-20190208.1335/
+#	elpa/transient-20220216.2303/
+#	elpa/treemacs-20220216.1950/
+#	elpa/treepy-20191108.2217/
+#	elpa/with-editor-20220211.2034/
+#	elpa/yaml-20210730.143/
+#	transient/
+#	var/
+#
