@@ -14,7 +14,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-
 ;; keep folders clean
 (use-package no-littering)
 
@@ -34,8 +33,7 @@
  (setq dired-listing-switches "-al --group-directories-first")
 
 ;; basic ui setup
-(setq inhibit-startup-message t)
-(tool-bar-mode -1)          ; Disable the toolbar
+(setq inhibit-startup-message t) (tool-bar-mode -1)          ; Disable the toolbar
 (tooltip-mode -1)           ; Disable tooltips
 ;; (set-fringe-mode 10)        ; Give some breathing room00D
 
@@ -67,10 +65,6 @@
 (require 'swiper)
 (global-set-key "\C-s" 'swiper)
 (global-set-key "\C-r" 'swiper-backward)
-
-
-;; (add-mode-hook 'go-mode-hook (lambda ()
-;;     (setq tab-width 4)))
 
 (require 'yasnippet)
 (yas-global-mode 1)
@@ -129,14 +123,6 @@
   :init
   (vertico-mode))
 
-;; theme & modeline
-(use-package doom-themes
-  :init (load-theme 'doom-palenight t))
-
-(use-package doom-modeline
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
-
 ;; ivy completion
 (use-package ivy
   :diminish
@@ -171,18 +157,6 @@
 (counsel-mode 1))
 
 
-;; magit configure
-(use-package magit
-  :commands magit-status
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-;; NOTE: Make sure to configure a GitHub token before using this package!
-;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
-;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
-(use-package forge
-  :after magit)
-
 ;; sql
 (eval-after-load "sql"
   '(load-library "sql-indent"))
@@ -208,42 +182,26 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(package-selected-packages
-   '(quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
+   '(obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
 
-(add-to-list 'load-path "/Users/ko-han/Repos/github.com/manateelazycat/lsp-bridge")
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/lsp-bridge")
 (require 'yasnippet)
 (yas-global-mode 1)
-
-(quelpa '(corfu-terminal
-          :fetcher git
-          :url "https://codeberg.org/akib/emacs-corfu-terminal.git"))
-
-(quelpa '(popon :fetcher git
-                :url "https://codeberg.org/akib/emacs-popon.git"))
-
-(require 'orderless)
-
-(require 'corfu)
-(global-corfu-mode)
-
-(require 'corfu-terminal)
-(setq corfu-terminal-disable-on-gui nil)
-(corfu-terminal-mode)
 
 (require 'lsp-bridge)
 (global-lsp-bridge-mode)
 
-;; setup web-mode
-(use-package typescript-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+;; enable terminal mode for lsp-bridge
+(setq package-check-signature nil)
 
-  (setq indent-tabs-mode nil)
-  (setq tab-width 2)
-)
+(unless (display-graphic-p)
+  (add-to-list 'load-path "/Users/gaohang/ghq/github.com/twlz0ne/acm-terminal")
+  (with-eval-after-load 'acm
+    (require 'acm-terminal)))
 
 
 (require 'yaml-mode)
@@ -252,3 +210,41 @@
 (add-hook 'yaml-mode-hook
       '(lambda ()
         (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+
+;; typescript mode
+(use-package typescript-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+
+(use-package ruby-mode)
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
+(use-package zenburn-theme
+:ensure t
+:config
+(load-theme 'zenburn t))
+
+
+;; obsidian setup
+(require 'obsidian)
+(obsidian-specify-path "/Users/gaohang/Library/Mobile Documents/iCloud~md~obsidian/Documents")
+;; If you want a different directory of `obsidian-capture':
+(setq obsidian-inbox-directory "Inbox")
+
+;; Replace standard command with Obsidian.el's in obsidian vault:
+(bind-key (kbd "C-c C-o") 'obsidian-follow-link-at-point 'obsidian-mode-map)
+
+;; Use either `obsidian-insert-wikilink' or `obsidian-insert-link':
+(bind-key (kbd "C-c C-l") 'obsidian-insert-wikilink 'obsidian-mode-map)
+
+;; Activate detectino of Obsidian vault
+(global-obsidian-mode t)
