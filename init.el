@@ -185,21 +185,26 @@
  '(custom-safe-themes
    '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(package-selected-packages
-   '(obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
+   '(projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
 
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/lsp-bridge")
+(add-to-list 'load-path "/Users/ko-han/Repos/github.com/manateelazycat/lsp-bridge")
 (require 'yasnippet)
 (yas-global-mode 1)
 
 (require 'lsp-bridge)
 (global-lsp-bridge-mode)
+(setq acm-enable-tabnine-helper 1)
+
+(bind-key (kbd "C-c d") 'lsp-bridge-find-def)
+(bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
+
 
 ;; enable terminal mode for lsp-bridge
 (setq package-check-signature nil)
 
 (unless (display-graphic-p)
-  (add-to-list 'load-path "/Users/gaohang/ghq/github.com/twlz0ne/acm-terminal")
+  (add-to-list 'load-path "/Users/ko-han/Repos/github.com/twlz0ne/acm-terminal")
   (with-eval-after-load 'acm
     (require 'acm-terminal)))
 
@@ -236,15 +241,37 @@
 
 ;; obsidian setup
 (require 'obsidian)
-(obsidian-specify-path "/Users/gaohang/Library/Mobile Documents/iCloud~md~obsidian/Documents")
+(obsidian-specify-path "/Users/ko-han/Library/Mobile Documents/iCloud~md~obsidian/Documents")
 ;; If you want a different directory of `obsidian-capture':
-(setq obsidian-inbox-directory "Inbox")
+(setq obsidian-inbox-directory "record")
 
 ;; Replace standard command with Obsidian.el's in obsidian vault:
 (bind-key (kbd "C-c C-o") 'obsidian-follow-link-at-point 'obsidian-mode-map)
 
 ;; Use either `obsidian-insert-wikilink' or `obsidian-insert-link':
 (bind-key (kbd "C-c C-l") 'obsidian-insert-wikilink 'obsidian-mode-map)
+(bind-key (kbd "C-c n") 'obsidian-capture)
+(bind-key (kbd "C-c j") 'obsidian-jump)
+
+
+;; (bind-key (kbd "C-c C-n") 'obsidian-capture 'obsidian-mode-map)
 
 ;; Activate detectino of Obsidian vault
 (global-obsidian-mode t)
+
+(use-package go-mode)
+(autoload 'go-mode "go-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+
+
+;; move between window
+(use-package ace-window)
+(global-set-key (kbd "M-o") 'ace-window)
+
+
+;; setup projectile
+(projectile-mode +1)
+;; Recommended keymap prefix on macOS
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+;; Recommended keymap prefix on Windows/Linux
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
