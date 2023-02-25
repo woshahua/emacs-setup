@@ -1,5 +1,6 @@
-;; Font Configuration -------------------------------------------------------
+;; frame
 (defvar efs/frame-transparency '(90 . 90))
+(set-face-attribute 'default nil :font "Source Code Pro-14")
 
 ;; mela package repo
 (require 'package)
@@ -20,6 +21,12 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
+
 ;; solve mac ls option problems
  (setq insert-directory-program "gls" dired-use-ls-dired t)
  (setq dired-listing-switches "-al --group-directories-first")
@@ -38,6 +45,40 @@
   (set-frame-position (selected-frame) 0 0)
   (set-frame-size (selected-frame) 91 80))
 
+;; treesit config
+(use-package treesit
+  :commands (treesit-install-language-grammar nf/treesit-install-all-languages)
+  :init
+  (setq treesit-language-source-alist
+   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+     (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+     (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+     (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+     (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+     (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
+     (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+     (lua . ("https://github.com/Azganoth/tree-sitter-lua"))
+     (make . ("https://github.com/alemuller/tree-sitter-make"))
+     (ocaml . ("https://github.com/tree-sitter/tree-sitter-ocaml" "ocaml/src" "ocaml"))
+     (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+     (php . ("https://github.com/tree-sitter/tree-sitter-php"))
+     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "typescript/src" "typescript"))
+     (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
+     (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+     (sql . ("https://github.com/m-novikov/tree-sitter-sql"))
+     (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))
+     (zig . ("https://github.com/GrayJack/tree-sitter-zig"))))
+  :config
+  (defun nf/treesit-install-all-languages ()
+    "Install all languages specified by `treesit-language-source-alist'."
+    (interactive)
+    (let ((languages (mapcar 'car treesit-language-source-alist)))
+      (dolist (lang languages)
+	      (treesit-install-language-grammar lang)
+	      (message "`%s' parser was installed." lang)
+	      (sit-for 0.75)))))
+
 ;; ref: https://dr-knz.net/a-tour-of-emacs-as-go-editor.html
 (require 'swiper)
 (global-set-key "\C-s" 'swiper)
@@ -49,6 +90,8 @@
 ;; auto refresh buffer
 (global-auto-revert-mode t)
 
+
+;; setup evil
 (use-package evil
   :init
   (setq evil-want-integration t)
@@ -150,7 +193,6 @@
 (global-set-key (kbd "C-;") 'sort-tab-close-current-tab)
 
 
-;; dont know right load-path
 ;; (add-to-list `load-path (expand-file-name "~/elisp"))
 ;; (require 'awesome-tray)
 ;; (awesome-tray-mode 1)
@@ -165,7 +207,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
+   '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(package-selected-packages
    '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
@@ -232,6 +274,9 @@
 (add-hook 'go-mode-hook #'tree-sitter-mode)
 (add-hook 'go-mode-hook #'tree-sitter-hl-mode)
 
+(use-package yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+
 ;; move between window
 (use-package ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
@@ -289,25 +334,6 @@ there is a whitespace/newline and a comma before the point."
            (split-string (shell-command-to-string "ghq list --full-path")))))
   :bind-keymap
   ("C-c p" . projectile-command-map))
-
-(use-package nyan-mode
-  :if (display-graphic-p)
-  :init
-  (setq nyan-animate-nyancat nil)
-  (nyan-mode t))
-
-(use-package anzu
-  :diminish anzu-mode
-  :bind (([remap query-replace] . anzu-query-replace)
-         ([remap query-replace-regexp] . anzu-query-replace-regexp)
-         :map isearch-mode-map
-         ([remap isearch-query-replace] . anzu-isearch-query-replace)
-         ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
-  :init (add-hook 'after-init-hook #'global-anzu-mode)
-  :config
-  (setq anzu-replace-to-string-separator (if (char-displayable-p ?→) " → " " -> ")
-        ;; let spaceline handle auzu info in modeline
-        anzu-cons-mode-line-p nil))
 
 (use-package powerline
   :defer t
@@ -414,3 +440,176 @@ there is a whitespace/newline and a comma before the point."
 
 (provide 'init-modeline)
 ;;; init-modeline ends here
+
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
+(require 'awesome-pair)
+
+(dolist (hook (list
+               'c-mode-common-hook
+               'c-mode-hook
+               'c++-mode-hook
+               'java-mode-hook
+               'haskell-mode-hook
+               'emacs-lisp-mode-hook
+               'lisp-interaction-mode-hook
+               'lisp-mode-hook
+               'maxima-mode-hook
+               'ielm-mode-hook
+               'sh-mode-hook
+               'makefile-gmake-mode-hook
+               'php-mode-hook
+               'python-mode-hook
+               'js-mode-hook
+               'go-mode-hook
+               'qml-mode-hook
+               'jade-mode-hook
+               'css-mode-hook
+               'ruby-mode-hook
+               'coffee-mode-hook
+               'rust-mode-hook
+               'qmake-mode-hook
+               'lua-mode-hook
+               'swift-mode-hook
+               'minibuffer-inactive-mode-hook
+               ))
+  (add-hook hook '(lambda () (awesome-pair-mode 1))))
+
+(define-key awesome-pair-mode-map (kbd "(") 'awesome-pair-open-round)
+(define-key awesome-pair-mode-map (kbd "[") 'awesome-pair-open-bracket)
+(define-key awesome-pair-mode-map (kbd "{") 'awesome-pair-open-curly)
+(define-key awesome-pair-mode-map (kbd ")") 'awesome-pair-close-round)
+(define-key awesome-pair-mode-map (kbd "]") 'awesome-pair-close-bracket)
+(define-key awesome-pair-mode-map (kbd "}") 'awesome-pair-close-curly)
+(define-key awesome-pair-mode-map (kbd "=") 'awesome-pair-equal)
+
+(define-key awesome-pair-mode-map (kbd "%") 'awesome-pair-match-paren)
+(define-key awesome-pair-mode-map (kbd "\"") 'awesome-pair-double-quote)
+
+(define-key awesome-pair-mode-map (kbd "SPC") 'awesome-pair-space)
+(define-key awesome-pair-mode-map (kbd "RET") 'awesome-pair-newline)
+
+
+(require 'company)
+(defvar company-mode/enable-yas t
+  "Enable yasnippet for all backands")
+
+(defun company-mode/backend-with-yas (backend)
+  (if (or (not company-mode/enable-yas)
+	  (and (listp backend)
+	       (member 'company-yasnippet backend)))
+      backend
+    (append (if (consp backend) backend (list backend))
+	    '(:with company-yasnippet))))
+
+(setq company-backends
+      (mapcar #'company-mode/backend-with-yas  company-backends))
+
+
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
+(require 'auto-save)
+(auto-save-enable)
+
+(setq auto-save-silent t)   ; quietly save
+(setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
+
+;;; custom predicates if you don't want auto save.
+;;; disable auto save mode when current filetype is an gpg file.
+(setq auto-save-disable-predicates
+      '((lambda ()
+      (string-suffix-p
+      "gpg"
+      (file-name-extension (buffer-name)) t))))
+
+(use-package org-ql
+  :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
+            :files (:defaults (:exclude "helm-org-ql.el"))))
+
+
+;; system style
+(load-theme 'spacemacs-dark t)
+
+;; setup for orgmode operation
+;;; setup for orgmode style
+(add-hook 'org-mode-hook #'org-modern-mode)
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+;; Minimal UI
+(require 'org-modern)
+
+;; Choose some fonts
+;;(set-face-attribute 'default nil :family "Iosevka")
+;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
+;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
+
+;; Add frame borders and window dividers
+(modify-all-frames-parameters
+ '((right-divider-width . 40)
+   (internal-border-width . 40)))
+(dolist (face '(window-divider
+                window-divider-first-pixel
+                window-divider-last-pixel))
+  (face-spec-reset-face face)
+  (set-face-foreground face (face-attribute 'default :background)))
+(set-face-background 'fringe (face-attribute 'default :background))
+
+(setq
+ ;; Edit settings
+ org-auto-align-tags nil
+ org-tags-column 0
+ org-catch-invisible-edits 'show-and-error
+ org-special-ctrl-a/e t
+ org-insert-heading-respect-content t
+
+ ;; Org styling, hide markup etc.
+ org-hide-emphasis-markers t
+ org-pretty-entities t
+ org-ellipsis "…"
+
+ ;; Agenda styling
+ org-agenda-tags-column 0
+ org-agenda-block-separator ?─
+ org-agenda-time-grid
+ '((daily today require-timed)
+   (800 1000 1200 1400 1600 1800 2000)
+   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+ org-agenda-current-time-string
+ "⭠ now ─────────────────────────────────────────────────")
+
+(global-org-modern-mode)
+
+;;; org-capture
+(require 'org)
+(global-set-key (kbd "C-c c") 'org-capture)
+;;;; set files for org-agenda-files
+(setq org-agenda-files '("~/gtd/inbox.org"
+                         "~/gtd/gtd.org"
+                         "~/gtd/tickler.org"))
+
+(setq org-capture-templates '(("t" "Todo [inbox]" entry
+                               (file+headline "~/gtd/inbox.org" "Tasks")
+                               "* TODO %i%?")
+                              ("T" "Tickler" entry
+                               (file+headline "~/gtd/tickler.org" "Tickler")
+                               "* %i%? \n %U")))
+
+(setq org-refile-targets '(("~/gtd/gtd.org" :maxlevel . 3)
+                           ("~/gtd/someday.org" :level . 1)
+                           ("~/gtd/tickler.org" :maxlevel . 2)))
+
+(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+
+;; magit setup
+(require 'magit)
+(global-set-key (kbd "C-x g") 'magit-status)
+(define-key magit-status-mode-map (kbd "s") 'magit-stage)
+(define-key magit-status-mode-map (kbd "c c") 'magit-commit)
+(define-key magit-status-mode-map (kbd "P u") 'magit-push-implicitly)
+
+(setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+(setq magit-diff-refine-hunk 'all)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
