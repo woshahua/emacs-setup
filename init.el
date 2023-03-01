@@ -173,31 +173,6 @@
   :config
   (counsel-mode 1))
 
-
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/sort-tab")
-(require 'sort-tab)
-(sort-tab-mode 1)
-
-(global-set-key (kbd "s-1") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-2") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-3") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-4") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-5") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-6") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-7") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-8") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-9") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-0") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-Q") 'sort-tab-close-all-tabs)
-(global-set-key (kbd "s-q") 'sort-tab-close-mode-tabs)
-(global-set-key (kbd "C-;") 'sort-tab-close-current-tab)
-
-
-;; (add-to-list `load-path (expand-file-name "~/elisp"))
-;; (require 'awesome-tray)
-;; (awesome-tray-mode 1)
-
-
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/thing-edit")
 (require 'thing-edit)
 
@@ -208,6 +183,8 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
+ '(elfeed-feeds
+   '("https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
  '(package-selected-packages
    '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
@@ -226,6 +203,26 @@
 (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
 (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
 
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+
+(unless (display-graphic-p)
+  (straight-use-package
+   '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+  (straight-use-package
+   '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (require 'yasnippet)
+            (yas-global-mode 1)
+
+            (require 'lsp-bridge)
+            (global-lsp-bridge-mode)
+
+            (unless (display-graphic-p)
+              (with-eval-after-load 'acm
+                (require 'acm-terminal)))))
 
 ;; setup for coding
 ;;; typescript mode
@@ -280,45 +277,6 @@
 ;; move between window
 (use-package ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
-
-(use-package sis
-  ;; :hook
-  ;; enable the /context/ and /inline region/ mode for specific buffers
-  ;; (((text-mode prog-mode) . sis-context-mode)
-  ;;  ((text-mode prog-mode) . sis-inline-mode))
-
-  :config
-  ;; For MacOS
-  (sis-ism-lazyman-config
-   "com.apple.keylayout.ABC"
-   "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese")
-
-  (defun w/sis--guess-context-by-prev-chars (backward-chars forward-chars)
-  "Detect the context based on the 2 chars before the point.
-
-It has a side effect of deleting the previous whitespace if
-there is a whitespace/newline and a comma before the point."
-  (when (and (>= (point) 3)
-             sis-context-mode
-             (memq major-mode '(org-mode)))
-    (let ((prev (preceding-char))
-          (pprev (char-before (1- (point)))))
-      (cond
-       ((and (or (char-equal ?  pprev) (char-equal 10 pprev)) ; a whitespace or newline
-             (char-equal ?, prev))
-        (delete-char -1)                ; side effect: delete the second whitespace
-        'other)
-       ((string-match-p "[[:ascii:]]" (char-to-string (preceding-char)))
-        'english)
-       (t 'other)))))
-(setq sis-context-detectors '(w/sis--guess-context-by-prev-chars))
-
-(setq sis-context-hooks '(post-command-hook)) ; may hurt performance
-
-(sis-global-respect-mode t)
-(sis-global-context-mode t))
-
-(bind-key (kbd "C-x j") 'sis-set-other)
 
 (use-package projectile
   :ensure t
@@ -583,6 +541,7 @@ there is a whitespace/newline and a comma before the point."
 ;;;; set files for org-agenda-files
 (setq org-agenda-files '("~/gtd/inbox.org"
                          "~/gtd/gtd.org"
+			 "~/gtd/done.org"
                          "~/gtd/tickler.org"))
 
 (setq org-capture-templates '(("t" "Todo [inbox]" entry
@@ -598,18 +557,63 @@ there is a whitespace/newline and a comma before the point."
 
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
-;; magit setup
-(require 'magit)
-(global-set-key (kbd "C-x g") 'magit-status)
-(define-key magit-status-mode-map (kbd "s") 'magit-stage)
-(define-key magit-status-mode-map (kbd "c c") 'magit-commit)
-(define-key magit-status-mode-map (kbd "P u") 'magit-push-implicitly)
 
-(setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-(setq magit-diff-refine-hunk 'all)
+;; chatgpt
+(use-package chatgpt
+  :straight (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el"))
+  :init
+  (require 'python)
+  (setq chatgpt-repo-path "~/.emacs.d/straight/repos/ChatGPT.el/")
+  :bind ("C-c q" . chatgpt-query))
+
+;; ;; vterm
+;; (use-package vterm
+;;     :ensure t)
+
+;; elfeed
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
+        elfeed-show-entry-switch 'display-buffer)
+  :bind
+  ("C-x w" . elfeed ))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(use-package fanyi
+  :ensure t
+  :custom
+  (fanyi-providers '(;; 海词
+                     fanyi-haici-provider
+                     ;; 有道同义词词典
+                     fanyi-youdao-thesaurus-provider
+                     ;; Etymonline
+                     fanyi-etymon-provider
+                     ;; Longman
+                     fanyi-longman-provider)))
+
+;; sis
+(require 'sis)
+(sis-ism-lazyman-config
+ "com.apple.keylayout.ABC"
+ "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese")
+;; enable the /cursor color/ mode
+(sis-global-cursor-color-mode t)
+;; enable the /respect/ mode
+(sis-global-respect-mode t)
+;; enable the /context/ mode for all buffers
+(sis-global-context-mode t)
+;; enable the /inline english/ mode for all buffers
+(sis-global-inline-mode t)
+
+;; get code link on github
+(global-set-key (kbd "C-c g l") 'git-link)
+
+
+;; magit setup
