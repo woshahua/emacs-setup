@@ -184,7 +184,7 @@
  '(custom-safe-themes
    '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(elfeed-feeds
-   '("https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
+   '("https://www.fatbobman.com/feed.rss" "https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
  '(package-selected-packages
    '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
@@ -229,6 +229,8 @@
 (use-package typescript-mode)
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-mode))
+(setq typescript-indent-level 2)
 
 ;;; ruby
 (use-package ruby-mode)
@@ -273,6 +275,7 @@
 
 (use-package yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(setq yaml-indent-offset 2)
 
 ;; move between window
 (use-package ace-window)
@@ -462,13 +465,8 @@
 (setq company-backends
       (mapcar #'company-mode/backend-with-yas  company-backends))
 
-
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
-(require 'auto-save)
-(auto-save-enable)
-
 (setq auto-save-silent t)   ; quietly save
-(setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
+(setq auto-save-delete-trailing-whitespace nil)  ; automatically delete spaces at the end of the line when saving
 
 ;;; custom predicates if you don't want auto save.
 ;;; disable auto save mode when current filetype is an gpg file.
@@ -553,18 +551,11 @@
 
 (setq org-refile-targets '(("~/gtd/gtd.org" :maxlevel . 3)
                            ("~/gtd/someday.org" :level . 1)
+                           ("~/gtd/done.org" :level . 1)
                            ("~/gtd/tickler.org" :maxlevel . 2)))
 
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
-
-;; chatgpt
-(use-package chatgpt
-  :straight (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el"))
-  :init
-  (require 'python)
-  (setq chatgpt-repo-path "~/.emacs.d/straight/repos/ChatGPT.el/")
-  :bind ("C-c q" . chatgpt-query))
 
 ;; ;; vterm
 ;; (use-package vterm
@@ -616,4 +607,6 @@
 (global-set-key (kbd "C-c g l") 'git-link)
 
 
-;; magit setup
+;; chatgpt
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/mind-wave")
+(require 'mind-wave)
