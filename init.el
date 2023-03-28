@@ -46,38 +46,51 @@
   (set-frame-size (selected-frame) 91 80))
 
 ;; treesit config
-(use-package treesit
-  :commands (treesit-install-language-grammar nf/treesit-install-all-languages)
-  :init
-  (setq treesit-language-source-alist
-   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-     (c . ("https://github.com/tree-sitter/tree-sitter-c"))
-     (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
-     (css . ("https://github.com/tree-sitter/tree-sitter-css"))
-     (go . ("https://github.com/tree-sitter/tree-sitter-go"))
-     (html . ("https://github.com/tree-sitter/tree-sitter-html"))
-     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
-     (json . ("https://github.com/tree-sitter/tree-sitter-json"))
-     (lua . ("https://github.com/Azganoth/tree-sitter-lua"))
-     (make . ("https://github.com/alemuller/tree-sitter-make"))
-     (ocaml . ("https://github.com/tree-sitter/tree-sitter-ocaml" "ocaml/src" "ocaml"))
-     (python . ("https://github.com/tree-sitter/tree-sitter-python"))
-     (php . ("https://github.com/tree-sitter/tree-sitter-php"))
-     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "typescript/src" "typescript"))
-     (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
-     (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
-     (sql . ("https://github.com/m-novikov/tree-sitter-sql"))
-     (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))
-     (zig . ("https://github.com/GrayJack/tree-sitter-zig"))))
+(use-package tree-sitter
+  :ensure t
   :config
-  (defun nf/treesit-install-all-languages ()
-    "Install all languages specified by `treesit-language-source-alist'."
-    (interactive)
-    (let ((languages (mapcar 'car treesit-language-source-alist)))
-      (dolist (lang languages)
-	      (treesit-install-language-grammar lang)
-	      (message "`%s' parser was installed." lang)
-	      (sit-for 0.75)))))
+  ;; activate tree-sitter on any buffer containing code for which it has a parser available
+  (global-tree-sitter-mode)
+  ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
+  ;; by switching on and off
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter)
+
+;; setup typescript
+(use-package typescript-mode
+  :after tree-sitter
+  :config
+  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
+  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
+  (define-derived-mode typescriptreact-mode typescript-mode
+    "TypeScript TSX")
+
+  ;; use our derived mode for tsx files
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
+  ;; by default, typescript-mode is mapped to the treesitter typescript parser
+  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+(setq typescript-indent-level 2)
+
+(use-package tsi
+  :after tree-sitter
+  :quelpa (tsi :fetcher github :repo "orzechowskid/tsi.el")
+  ;; define autoload definitions which when actually invoked will cause package to be loaded
+  :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
+  :init
+  (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
+  (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
+  (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
+  (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
+
+;; autoformat
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1))
 
 ;; ref: https://dr-knz.net/a-tour-of-emacs-as-go-editor.html
 (require 'swiper)
@@ -188,58 +201,48 @@
  '(package-selected-packages
    '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
+;; (require 'yasnippet)
+;; (yas-global-mode 1)
 
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
+;; ;; lsp-bridge configuration
+;; (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
 
-(require 'yasnippet)
-(yas-global-mode 1)
+;; (use-package lsp-bridge
+;;   :hook (after-init . global-lsp-bridge-mode)
+;;   :custom
+;;   (lsp-bridge-signature-function 'eldoc-message)
+;;   (lsp-bridge-multi-lang-server-extension-list
+;;     '((("ts" "tsx") . "typescript_eslint"))))
 
-;; lsp-bridge configuration
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
+;; (setq acm-enable-tabnine-helper 1)
+;; (setq lsp-bridge-enable-hover-diagnostic t)
 
-(use-package lsp-bridge
-  :hook (after-init . global-lsp-bridge-mode)
-  :custom
-  (lsp-bridge-signature-function 'eldoc-message)
-  (lsp-bridge-multi-lang-server-extension-list
-    '((("ts" "tsx") . "typescript_eslint"))))
+;; (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
+;; (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
 
-(setq acm-enable-tabnine-helper 1)
-(setq lsp-bridge-enable-hover-diagnostic t)
+;; (unless (package-installed-p 'yasnippet)
+;;   (package-install 'yasnippet))
 
-(bind-key (kbd "C-c d") 'lsp-bridge-find-def)
-(bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
+;; (unless (display-graphic-p)
+;;   (straight-use-package
+;;    '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+;;   (straight-use-package
+;;    '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
 
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
+;; (add-hook 'emacs-startup-hook
+;;           (lambda ()
+;;             (require 'yasnippet)
+;;             (yas-global-mode 1)
 
-(unless (display-graphic-p)
-  (straight-use-package
-   '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-  (straight-use-package
-   '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
+;;             (require 'lsp-bridge)
+;;             (global-lsp-bridge-mode)
 
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (require 'yasnippet)
-            (yas-global-mode 1)
-
-            (require 'lsp-bridge)
-            (global-lsp-bridge-mode)
-
-            (unless (display-graphic-p)
-              (with-eval-after-load 'acm
-                (require 'acm-terminal)))))
+;;             (unless (display-graphic-p)
+;;               (with-eval-after-load 'acm
+;;                 (require 'acm-terminal)))))
 
 ;; setup for coding
 ;;; typescript mode
-(use-package typescript-mode)
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-mode))
-(setq typescript-indent-level 2)
-(add-hook 'typescript-mode #'tree-sitter-mode)
-
 ;;; ruby
 (use-package ruby-mode)
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
@@ -472,17 +475,6 @@
 (setq company-backends
       (mapcar #'company-mode/backend-with-yas  company-backends))
 
-(setq auto-save-silent t)   ; quietly save
-(setq auto-save-delete-trailing-whitespace nil)  ; automatically delete spaces at the end of the line when saving
-
-;;; custom predicates if you don't want auto save.
-;;; disable auto save mode when current filetype is an gpg file.
-(setq auto-save-disable-predicates
-      '((lambda ()
-      (string-suffix-p
-      "gpg"
-      (file-name-extension (buffer-name)) t))))
-
 (use-package org-ql
   :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
             :files (:defaults (:exclude "helm-org-ql.el"))))
@@ -617,3 +609,12 @@
 ;; chatgpt
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/mind-wave")
 (require 'mind-wave)
+
+;; auto-save
+(use-package super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
+
+(use-package eglot
+  :ensure t)
