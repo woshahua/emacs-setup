@@ -195,8 +195,15 @@
 (yas-global-mode 1)
 
 ;; lsp-bridge configuration
-(require 'lsp-bridge)
-(global-lsp-bridge-mode)
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
+
+(use-package lsp-bridge
+  :hook (after-init . global-lsp-bridge-mode)
+  :custom
+  (lsp-bridge-signature-function 'eldoc-message)
+  (lsp-bridge-multi-lang-server-extension-list
+    '((("ts" "tsx") . "typescript_eslint"))))
+
 (setq acm-enable-tabnine-helper 1)
 (setq lsp-bridge-enable-hover-diagnostic t)
 
@@ -231,6 +238,7 @@
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-mode))
 (setq typescript-indent-level 2)
+(add-hook 'typescript-mode #'tree-sitter-mode)
 
 ;;; ruby
 (use-package ruby-mode)
@@ -275,7 +283,6 @@
 
 (use-package yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-(setq yaml-indent-offset 2)
 
 ;; move between window
 (use-package ace-window)
