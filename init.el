@@ -59,6 +59,8 @@
   :ensure t
   :after tree-sitter)
 
+;; setup kotlin
+
 ;; setup typescript
 (use-package typescript-mode
   :after tree-sitter
@@ -194,52 +196,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(acm-backend-codeium-api-key "c7d24326-3dd7-41c8-9818-9400bf71304d")
  '(custom-safe-themes
    '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(elfeed-feeds
    '("https://www.fatbobman.com/feed.rss" "https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
  '(package-selected-packages
    '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
-
-;; (require 'yasnippet)
-;; (yas-global-mode 1)
-
-;; ;; lsp-bridge configuration
-;; (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
-
-;; (use-package lsp-bridge
-;;   :hook (after-init . global-lsp-bridge-mode)
-;;   :custom
-;;   (lsp-bridge-signature-function 'eldoc-message)
-;;   (lsp-bridge-multi-lang-server-extension-list
-;;     '((("ts" "tsx") . "typescript_eslint"))))
-
-;; (setq acm-enable-tabnine-helper 1)
-;; (setq lsp-bridge-enable-hover-diagnostic t)
-
-;; (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
-;; (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
-
-;; (unless (package-installed-p 'yasnippet)
-;;   (package-install 'yasnippet))
-
-;; (unless (display-graphic-p)
-;;   (straight-use-package
-;;    '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-;;   (straight-use-package
-;;    '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
-
-;; (add-hook 'emacs-startup-hook
-;;           (lambda ()
-;;             (require 'yasnippet)
-;;             (yas-global-mode 1)
-
-;;             (require 'lsp-bridge)
-;;             (global-lsp-bridge-mode)
-
-;;             (unless (display-graphic-p)
-;;               (with-eval-after-load 'acm
-;;                 (require 'acm-terminal)))))
 
 ;; setup for coding
 ;;; typescript mode
@@ -260,8 +223,8 @@
 ;; Replace standard command with Obsidian.el's in obsidian vault:
 (bind-key (kbd "C-c o") 'obsidian-follow-link-at-point 'obsidian-mode-map)
 (bind-key (kbd "C-c l") 'obsidian-insert-link 'obsidian-mode-map)
-(bind-key (kbd "C-c n") 'obsidian-capture 'obsidian-mode-map)
-(bind-key (kbd "C-c n") 'obsidian-capture)
+(bind-key (kbd "C-c m") 'obsidian-capture 'obsidian-mode-map)
+(bind-key (kbd "C-c m") 'obsidian-capture)
 (bind-key (kbd "C-c j") 'obsidian-jump)
 (bind-key (kbd "C-c j") 'obsidian-jump 'obsidian-mode-map)
 
@@ -459,22 +422,6 @@
 (define-key awesome-pair-mode-map (kbd "SPC") 'awesome-pair-space)
 (define-key awesome-pair-mode-map (kbd "RET") 'awesome-pair-newline)
 
-
-(require 'company)
-(defvar company-mode/enable-yas t
-  "Enable yasnippet for all backands")
-
-(defun company-mode/backend-with-yas (backend)
-  (if (or (not company-mode/enable-yas)
-	  (and (listp backend)
-	       (member 'company-yasnippet backend)))
-      backend
-    (append (if (consp backend) backend (list backend))
-	    '(:with company-yasnippet))))
-
-(setq company-backends
-      (mapcar #'company-mode/backend-with-yas  company-backends))
-
 (use-package org-ql
   :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
             :files (:defaults (:exclude "helm-org-ql.el"))))
@@ -606,15 +553,70 @@
 (global-set-key (kbd "C-c g l") 'git-link)
 
 
-;; chatgpt
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/mind-wave")
-(require 'mind-wave)
+(require 'yasnippet)
+(yas-global-mode 1)
 
-;; auto-save
-(use-package super-save
+;; lsp-bridge configuration
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
+
+(use-package lsp-bridge
+  :hook (after-init . global-lsp-bridge-mode)
+  :custom
+  (lsp-bridge-signature-function 'eldoc-message)
+  (lsp-bridge-multi-lang-server-extension-list
+    '((("ts" "tsx") . "typescript_eslint"))))
+
+(setq acm-enable-tabnine-helper 0)
+(setq acm-enable-codeium 1)
+(setq lsp-bridge-enable-hover-diagnostic t)
+
+(bind-key (kbd "C-c d") 'lsp-bridge-find-def)
+(bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
+
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+
+(unless (display-graphic-p)
+  (straight-use-package
+   '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+  (straight-use-package
+   '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (require 'yasnippet)
+            (yas-global-mode 1)
+
+            (require 'lsp-bridge)
+            (global-lsp-bridge-mode)
+
+            (unless (display-graphic-p)
+              (with-eval-after-load 'acm
+                (require 'acm-terminal)))))
+
+
+
+;; (with-eval-after-load 'magit
+;;   (require 'forge))
+
+;; (setq auth-sources '("~/.authinfo"))
+
+
+;; org-roam mode
+(use-package org-roam
   :ensure t
+  :custom
+  (org-roam-directory (file-truename "/Users/han-ko/org-roam/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
   :config
-  (super-save-mode +1))
-
-(use-package eglot
-  :ensure t)
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
