@@ -267,7 +267,10 @@
            (lambda (x) (abbreviate-file-name x))
            (split-string (shell-command-to-string "ghq list --full-path")))))
   :bind-keymap
-  ("C-c p" . projectile-command-map))
+  ("C-c p" . projectile-command-map)
+  :bind (:map projectile-command-map
+              ("w" . projectile-ripgrep)))
+
 
 (use-package powerline
   :defer t
@@ -503,16 +506,13 @@
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
 
-;; ;; vterm
-;; (use-package vterm
-;;     :ensure t)
-
 ;; elfeed
 (use-package elfeed
   :ensure t
   :config
   (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
         elfeed-show-entry-switch 'display-buffer)
+  (bind-key "r" #'elfeed-update elfeed-search-mode-map)
   :bind
   ("C-x w" . elfeed ))
 
@@ -534,24 +534,8 @@
                      fanyi-etymon-provider
                      ;; Longman
                      fanyi-longman-provider)))
-
-;; sis
-(require 'sis)
-(sis-ism-lazyman-config
- "com.apple.keylayout.ABC"
- "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese")
-;; enable the /cursor color/ mode
-(sis-global-cursor-color-mode t)
-;; enable the /respect/ mode
-(sis-global-respect-mode t)
-;; enable the /context/ mode for all buffers
-(sis-global-context-mode t)
-;; enable the /inline english/ mode for all buffers
-(sis-global-inline-mode t)
-
 ;; get code link on github
 (global-set-key (kbd "C-c g l") 'git-link)
-
 
 (require 'yasnippet)
 (yas-global-mode 1)
@@ -566,8 +550,7 @@
   (lsp-bridge-multi-lang-server-extension-list
     '((("ts" "tsx") . "typescript_eslint"))))
 
-(setq acm-enable-tabnine-helper 0)
-(setq acm-enable-codeium 1)
+(setq acm-enable-tabnine-helper 1)
 (setq lsp-bridge-enable-hover-diagnostic t)
 
 (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
@@ -594,14 +577,6 @@
               (with-eval-after-load 'acm
                 (require 'acm-terminal)))))
 
-
-
-;; (with-eval-after-load 'magit
-;;   (require 'forge))
-
-;; (setq auth-sources '("~/.authinfo"))
-
-
 ;; org-roam mode
 (use-package org-roam
   :ensure t
@@ -620,3 +595,82 @@
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
+
+
+;; copilot
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t)
+;;; enable copilot on programming mode
+(add-hook 'prog-mode-hook 'copilot-mode)
+
+;;; bind completion key
+(define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
+
+;;; comment out this is buggy
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/mind-wave")
+(require 'mind-wave)
+
+(require 'org)
+(require 'org-ai)
+(add-hook 'org-mode-hook #'org-ai-mode)
+(org-ai-global-mode)
+(setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
+(org-ai-install-yasnippets) ; if you are using yasnippet and want `ai` snippets
+
+;; org-mode 换行问题
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+;; org-ai cache problem
+
+;; pangu-spacing
+;;; https://github.com/coldnew/pangu-spacing
+(require 'pangu-spacing)
+(global-pangu-spacing-mode 1)
+(setq pangu-spacing-real-insert-separtor t)
+
+
+(setq org-startup-folded t)
+(defun my-org-mode-auto-fold ()
+  (when (and (buffer-file-name)
+             (and (eq (file-name-extension (buffer-file-name)) "org")
+                  (not (file-exists-p (buffer-file-name)))))
+    (org-cycle)))
+
+(add-hook 'org-mode-hook 'my-org-mode-auto-fold)
+
+
+;; ob-swiftui
+;;; https://github.com/xenodium/ob-swiftui
+(require 'ob-swiftui)
+(ob-swiftui-setup)
+
+;; comment-region
+;;; TODO: comment line is better usage
+(global-set-key (kbd "C-M-c") 'comment-region)
+(global-set-key (kbd "C-M-u") 'uncomment-region)
+
+;; nerd-icons
+(require 'nerd-icons)
+(use-package treemacs-nerd-icons
+  :config
+  (treemacs-load-theme "nerd-icons"))
+(require 'nerd-icons-dired)
+(add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
+
+
+;; auto-save
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
+(require 'auto-save)
+(auto-save-enable)
+
+(setq auto-save-silent t)   ; quietly save
+(setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
+
+;;; custom predicates if you don't want auto save.
+;;; disable auto save mode when current filetype is an gpg file.
+(setq auto-save-disable-predicates
+      '((lambda ()
+      (string-suffix-p
+      "gpg"
+      (file-name-extension (buffer-name)) t))))
