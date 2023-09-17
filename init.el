@@ -690,13 +690,6 @@
   (apheleia-global-mode t))
 
 
-(use-package company
-  :ensure t
-  :config
-  (global-company-mode)
-  (setq company-idle-delay 0.5) ;; The number is in seconds
-  (setq company-minimum-prefix-length 1))
-
 ;; setup eglot related thing
 (define-derived-mode typescriptreact-mode web-mode "TypescriptReact"
 "A major mode for tsx.")
@@ -716,67 +709,42 @@
   (cl-pushnew '((js-mode typescript-mode typescriptreact-mode) . ("typescript-language-server" "--stdio"))
 	      eglot-server-programs
 	      :test #'equal)
-  (add-to-list 'eglot-stay-out-of 'company)
   ;; key bindings
-  (td/bind-keys '(("C-c e r" . eglot-rename)
-                  ("C-c e d" . eglot-find-typeDefinition)
-                  ("C-c e D" . eglot-find-declaration)
-                  ("C-c e f" . eglot-format)
-                  ("C-c e F" . eglot-format-buffer)
-                  ("C-c e R" . eglot-reconnect)) eglot-mode-map)
-  )
+  (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c e d") 'eglot-find-typeDefinition)
+  (define-key eglot-mode-map (kbd "C-c e D") 'eglot-find-declaration)
+  (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
+  (define-key eglot-mode-map (kbd "C-c e F") 'eglot-format-buffer)
+  (define-key eglot-mode-map (kbd "C-c e R") 'eglot-reconnect))
 
-;; corfu setup
-(require 'corfu)
-  (defun corfu-enable-in-minibuffer ()
-    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
-    (when (where-is-internal #'completion-at-point (list (current-local-map)))
-      (corfu-mode 1)))
+;; setup corfu
+(use-package corfu
+  :custom ((corfu-auto t)
+           (corfu-auto-prefix 1)
+           (corfu-auto-delay 0)
+           (corfu-cycle t)
+           (tab-always-indent 'complete))
+  :bind (nil
+         :map corfu-map
+         ("RET" . nil)
+         ("<return>" . nil)
+         ("TAB" . corfu-insert)
+         ("<tab>" . corfu-insert))
+  :init
+  (global-corfu-mode +1)
+)
 
-(defun corfu-send-shell (&rest _)
-    "Send completion candidate when inside comint/eshell."
-    (cond
-     ((and (derived-mode-p 'eshell-mode) (fboundp 'eshell-send-input))
-      (eshell-send-input))
-     ((and (derived-mode-p 'comint-mode)  (fboundp 'comint-send-input))
-      (comint-send-input))))
-  (advice-add #'corfu-insert :after #'corfu-send-shell)
+;; orderless
+(use-package orderless
+  :demand t
+  :config
+  (setq completion-styles '(orderless flex)
+        completion-category-overrides '((eglot (styles . (orderless flex))))))
 
-  ;; Silence the pcomplete capf, no errors or messages!
-  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
 
-  ;; Ensure that pcomplete does not write to the buffer
-  ;; and behaves as a pure `completion-at-point-function'.
-  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
 
-  (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
+;; cape
+(use-package cape)
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
 
-  (with-eval-after-load 'corfu
-    (define-key corfu-map (kbd "SPC") #'corfu-insert-separator))
-  (global-corfu-mode)
-
-(with-eval-after-load 'corfu
-  (require 'cape)
-
-  (defun td/don-local-cape (comps)
-    "Return a hook function to set local capfs."
-    `(lambda ()
-       (setq-local completion-at-point-functions ',comps)))
-
-  (defvar td/cape-base (list #'cape-file
-                             #'cape-history
-                             #'cape-dabbrev)
-    "Base completions back-ends.")
-  (defvar td/cape-writing (append td/cape-base
-                                  (list #'cape-ispell))
-    "Completions used for writing modes.")
-  (defvar td/cape-prog (append td/cape-base
-                               (list #'cape-symbol
-                                     #'cape-keyword))
-    "Completions for programming modes.")
-  (dolist (comp td/cape-base)
-    (add-to-list 'completion-at-point-functions comp))
-  (with-eval-after-load 'cape
-    (add-hook 'prog-mode-hook (td/don-local-cape td/cape-prog))
-    (add-hook 'org-mode-hook (td/don-local-cape td/cape-writing))
-    (add-hook 'message-mode-hook (td/don-local-cape td/cape-writing))))
+(fset #'jsonrpc--log-event #'ignore)
