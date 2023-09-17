@@ -28,8 +28,9 @@
 (require 'quelpa-use-package)
 
 ;; solve mac ls option problems
- (setq insert-directory-program "gls" dired-use-ls-dired t)
- (setq dired-listing-switches "-al --group-directories-first")
+(setq insert-directory-program "/opt/homebrew/bin/gls" dired-use-ls-dired t)
+;; (setq insert-directory-program "gls" dired-use-ls-dired t)
+(setq dired-listing-switches "-al --group-directories-first")
 
 ;; basic ui setup
 (setq inhibit-startup-message t)
@@ -60,39 +61,6 @@
   :after tree-sitter)
 
 ;; setup kotlin
-
-;; setup typescript
-(use-package typescript-mode
-  :after tree-sitter
-  :config
-  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
-  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
-  (define-derived-mode typescriptreact-mode typescript-mode
-    "TypeScript TSX")
-
-  ;; use our derived mode for tsx files
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
-  ;; by default, typescript-mode is mapped to the treesitter typescript parser
-  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
-  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
-(setq typescript-indent-level 2)
-
-(use-package tsi
-  :after tree-sitter
-  :quelpa (tsi :fetcher github :repo "orzechowskid/tsi.el")
-  ;; define autoload definitions which when actually invoked will cause package to be loaded
-  :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
-  :init
-  (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
-  (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
-  (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
-  (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
-
-;; autoformat
-(use-package apheleia
-  :ensure t
-  :config
-  (apheleia-global-mode +1))
 
 ;; ref: https://dr-knz.net/a-tour-of-emacs-as-go-editor.html
 (require 'swiper)
@@ -431,7 +399,7 @@
 
 
 ;; system style
-(load-theme 'spacemacs-dark t)
+;; (load-theme 'spacemacs-dark t)
 
 ;; setup for orgmode operation
 ;;; setup for orgmode style
@@ -540,42 +508,43 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
+;; temporary disable lsp-bridge
 ;; lsp-bridge configuration
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
+;; (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
 
-(use-package lsp-bridge
-  :hook (after-init . global-lsp-bridge-mode)
-  :custom
-  (lsp-bridge-signature-function 'eldoc-message)
-  (lsp-bridge-multi-lang-server-extension-list
-    '((("ts" "tsx") . "typescript_eslint"))))
+;; (use-package lsp-bridge
+;;   t
+;;   :custom
+;;   (lsp-bridge-signature-function 'eldoc-message)
+;;   (lsp-bridge-multi-lang-server-extension-list
+;;     '((("ts" "tsx") . "typescript_eslint"))))
 
-(setq acm-enable-tabnine-helper 1)
-(setq lsp-bridge-enable-hover-diagnostic t)
+;; (setq acm-enable-tabnine-helper 1)
+;; (setq lsp-bridge-enable-hover-diagnostic t)
 
-(bind-key (kbd "C-c d") 'lsp-bridge-find-def)
-(bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
+;; (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
+;; (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
 
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
+;; (unless (package-installed-p 'yasnippet)
+;;   (package-install 'yasnippet))
 
-(unless (display-graphic-p)
-  (straight-use-package
-   '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-  (straight-use-package
-   '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
+;; (unless (display-graphic-p)
+;;   (straight-use-package
+;;    '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+;;   (straight-use-package
+;;    '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
 
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (require 'yasnippet)
-            (yas-global-mode 1)
+;; (add-hook 'emacs-startup-hook
+;;           (lambda ()
+;;             (require 'yasnippet)
+;;             (yas-global-mode 1)
 
-            (require 'lsp-bridge)
-            (global-lsp-bridge-mode)
+;;             (require 'lsp-bridge)
+;;             (global-lsp-bridge-mode)
 
-            (unless (display-graphic-p)
-              (with-eval-after-load 'acm
-                (require 'acm-terminal)))))
+;;             (unless (display-graphic-p)
+;;               (with-eval-after-load 'acm
+;;                 (require 'acm-terminal)))))
 
 ;; org-roam mode
 (use-package org-roam
@@ -639,7 +608,6 @@
 
 (add-hook 'org-mode-hook 'my-org-mode-auto-fold)
 
-
 ;; ob-swiftui
 ;;; https://github.com/xenodium/ob-swiftui
 (require 'ob-swiftui)
@@ -658,19 +626,157 @@
 (require 'nerd-icons-dired)
 (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
 
+;; company mode
 
-;; auto-save
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
-(require 'auto-save)
-(auto-save-enable)
+(define-derived-mode typescriptreact-mode web-mode "TypescriptReact"
+  "A major mode for tsx.")
 
-(setq auto-save-silent t)   ; quietly save
-(setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
+(use-package typescript-mode
+  :mode (("\\.ts\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescriptreact-mode)))
 
-;;; custom predicates if you don't want auto save.
-;;; disable auto save mode when current filetype is an gpg file.
-(setq auto-save-disable-predicates
-      '((lambda ()
-      (string-suffix-p
-      "gpg"
-      (file-name-extension (buffer-name)) t))))
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :hook ((prog-mode org-mode) . yas-minor-mode)
+  :bind (("C-c y i" . yas-insert-snippet)
+         ("C-c y f" . yas-visit-snippet-file)
+         ("C-c y n" . yas-new-snippet)
+         ("C-c y t" . yas-tryout-snippet)
+         ("C-c y l" . yas-describe-tables)
+         ("C-c y g" . yas-global-mode)
+         ("C-c y m" . yas-minor-mode)
+         ("C-c y r" . yas-reload-all)
+         ("C-c y x" . yas-expand)
+         :map yas-keymap
+         ("C-i" . yas-next-field-or-maybe-expand))
+  :config
+  (yas-reload-all))
+
+(use-package yasnippet-snippets
+  :defer t
+  :after yasnippet)
+
+;; tree-sitter typescript
+(use-package typescript-mode
+  :after tree-sitter
+  :config
+  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
+  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
+  (define-derived-mode typescriptreact-mode typescript-mode
+    "TypeScript TSX")
+
+  ;; use our derived mode for tsx files
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
+  ;; by default, typescript-mode is mapped to the treesitter typescript parser
+  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+;; setup typescript
+(use-package tsi
+  :after tree-sitter
+  :quelpa (tsi :fetcher github :repo "orzechowskid/tsi.el")
+  ;; define autoload definitions which when actually invoked will cause package to be loaded
+  :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
+  :init
+  (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
+  (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
+  (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
+  (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
+
+;; autoformat
+(use-package apheleia
+  :straight (apheleia :host github :repo "raxod502/apheleia")
+  :config
+  (apheleia-global-mode t))
+
+
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode)
+  (setq company-idle-delay 0.5) ;; The number is in seconds
+  (setq company-minimum-prefix-length 1))
+
+;; setup eglot related thing
+(define-derived-mode typescriptreact-mode web-mode "TypescriptReact"
+"A major mode for tsx.")
+
+(use-package typescript-mode
+  :mode (("\.ts\'" . typescript-mode)
+	 ("\.tsx\'" . typescriptreact-mode)))
+
+(use-package eglot
+  :ensure t
+  :defer 3
+  :hook
+  ((js-mode
+    typescript-mode
+    typescriptreact-mode) . eglot-ensure)
+  :config
+  (cl-pushnew '((js-mode typescript-mode typescriptreact-mode) . ("typescript-language-server" "--stdio"))
+	      eglot-server-programs
+	      :test #'equal)
+  (add-to-list 'eglot-stay-out-of 'company)
+  ;; key bindings
+  (td/bind-keys '(("C-c e r" . eglot-rename)
+                  ("C-c e d" . eglot-find-typeDefinition)
+                  ("C-c e D" . eglot-find-declaration)
+                  ("C-c e f" . eglot-format)
+                  ("C-c e F" . eglot-format-buffer)
+                  ("C-c e R" . eglot-reconnect)) eglot-mode-map)
+  )
+
+;; corfu setup
+(require 'corfu)
+  (defun corfu-enable-in-minibuffer ()
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point (list (current-local-map)))
+      (corfu-mode 1)))
+
+(defun corfu-send-shell (&rest _)
+    "Send completion candidate when inside comint/eshell."
+    (cond
+     ((and (derived-mode-p 'eshell-mode) (fboundp 'eshell-send-input))
+      (eshell-send-input))
+     ((and (derived-mode-p 'comint-mode)  (fboundp 'comint-send-input))
+      (comint-send-input))))
+  (advice-add #'corfu-insert :after #'corfu-send-shell)
+
+  ;; Silence the pcomplete capf, no errors or messages!
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+
+  ;; Ensure that pcomplete does not write to the buffer
+  ;; and behaves as a pure `completion-at-point-function'.
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
+
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
+
+  (with-eval-after-load 'corfu
+    (define-key corfu-map (kbd "SPC") #'corfu-insert-separator))
+  (global-corfu-mode)
+
+(with-eval-after-load 'corfu
+  (require 'cape)
+
+  (defun td/don-local-cape (comps)
+    "Return a hook function to set local capfs."
+    `(lambda ()
+       (setq-local completion-at-point-functions ',comps)))
+
+  (defvar td/cape-base (list #'cape-file
+                             #'cape-history
+                             #'cape-dabbrev)
+    "Base completions back-ends.")
+  (defvar td/cape-writing (append td/cape-base
+                                  (list #'cape-ispell))
+    "Completions used for writing modes.")
+  (defvar td/cape-prog (append td/cape-base
+                               (list #'cape-symbol
+                                     #'cape-keyword))
+    "Completions for programming modes.")
+  (dolist (comp td/cape-base)
+    (add-to-list 'completion-at-point-functions comp))
+  (with-eval-after-load 'cape
+    (add-hook 'prog-mode-hook (td/don-local-cape td/cape-prog))
+    (add-hook 'org-mode-hook (td/don-local-cape td/cape-writing))
+    (add-hook 'message-mode-hook (td/don-local-cape td/cape-writing))))
