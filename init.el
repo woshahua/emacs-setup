@@ -1,3 +1,4 @@
+;; use shell setup
 ;; frame
 (defvar efs/frame-transparency '(90 . 90))
 (set-face-attribute 'default nil :font "Source Code Pro-14")
@@ -6,6 +7,15 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+
+(setenv "SHELL" "/usr/local/bin/zsh")
+(setq exec-path-from-shell-arguments '("-l"))
+(setq exec-path-from-shell-shell-name "/bin/zsh")
+(setq exec-path-from-shell-debug t)
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
 
 ;; straight
 (defvar bootstrap-version)
@@ -510,41 +520,7 @@
 
 ;; temporary disable lsp-bridge
 ;; lsp-bridge configuration
-;; (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
-
-;; (use-package lsp-bridge
-;;   t
-;;   :custom
-;;   (lsp-bridge-signature-function 'eldoc-message)
-;;   (lsp-bridge-multi-lang-server-extension-list
-;;     '((("ts" "tsx") . "typescript_eslint"))))
-
-;; (setq acm-enable-tabnine-helper 1)
-;; (setq lsp-bridge-enable-hover-diagnostic t)
-
-;; (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
-;; (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
-
-;; (unless (package-installed-p 'yasnippet)
-;;   (package-install 'yasnippet))
-
-;; (unless (display-graphic-p)
-;;   (straight-use-package
-;;    '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-;;   (straight-use-package
-;;    '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
-
-;; (add-hook 'emacs-startup-hook
-;;           (lambda ()
-;;             (require 'yasnippet)
-;;             (yas-global-mode 1)
-
-;;             (require 'lsp-bridge)
-;;             (global-lsp-bridge-mode)
-
-;;             (unless (display-graphic-p)
-;;               (with-eval-after-load 'acm
-;;                 (require 'acm-terminal)))))
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
 
 ;; org-roam mode
 (use-package org-roam
@@ -575,10 +551,6 @@
 
 ;;; bind completion key
 (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
-
-;;; comment out this is buggy
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/mind-wave")
-(require 'mind-wave)
 
 (require 'org)
 (require 'org-ai)
@@ -626,14 +598,9 @@
 (require 'nerd-icons-dired)
 (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
 
-;; company mode
-
-(define-derived-mode typescriptreact-mode web-mode "TypescriptReact"
-  "A major mode for tsx.")
-
 (use-package typescript-mode
-  :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . typescriptreact-mode)))
+  :mode (("\.ts\'" . typescript-mode)
+	 ("\.tsx\'" . typescriptreact-mode)))
 
 (use-package yasnippet
   :diminish yas-minor-mode
@@ -691,60 +658,35 @@
 
 
 ;; setup eglot related thing
-(define-derived-mode typescriptreact-mode web-mode "TypescriptReact"
-"A major mode for tsx.")
+(use-package lsp-bridge
+  :custom
+  (lsp-bridge-signature-function 'eldoc-message)
+  (lsp-bridge-multi-lang-server-extension-list
+    '((("ts" "tsx") . "typescript_eslint"))))
 
-(use-package typescript-mode
-  :mode (("\.ts\'" . typescript-mode)
-	 ("\.tsx\'" . typescriptreact-mode)))
+(setq acm-enable-tabnine-helper 1)
+(setq lsp-bridge-enable-hover-diagnostic t)
 
-(use-package eglot
-  :ensure t
-  :defer 3
-  :hook
-  ((js-mode
-    typescript-mode
-    typescriptreact-mode) . eglot-ensure)
-  :config
-  (cl-pushnew '((js-mode typescript-mode typescriptreact-mode) . ("typescript-language-server" "--stdio"))
-	      eglot-server-programs
-	      :test #'equal)
-  ;; key bindings
-  (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
-  (define-key eglot-mode-map (kbd "C-c e d") 'eglot-find-typeDefinition)
-  (define-key eglot-mode-map (kbd "C-c e D") 'eglot-find-declaration)
-  (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
-  (define-key eglot-mode-map (kbd "C-c e F") 'eglot-format-buffer)
-  (define-key eglot-mode-map (kbd "C-c e R") 'eglot-reconnect))
+(bind-key (kbd "C-c d") 'lsp-bridge-find-def)
+(bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
 
-;; setup corfu
-(use-package corfu
-  :custom ((corfu-auto t)
-           (corfu-auto-prefix 1)
-           (corfu-auto-delay 0)
-           (corfu-cycle t)
-           (tab-always-indent 'complete))
-  :bind (nil
-         :map corfu-map
-         ("RET" . nil)
-         ("<return>" . nil)
-         ("TAB" . corfu-insert)
-         ("<tab>" . corfu-insert))
-  :init
-  (global-corfu-mode +1)
-)
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
 
-;; orderless
-(use-package orderless
-  :demand t
-  :config
-  (setq completion-styles '(orderless flex)
-        completion-category-overrides '((eglot (styles . (orderless flex))))))
+(unless (display-graphic-p)
+  (straight-use-package
+   '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
+  (straight-use-package
+   '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
 
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (require 'yasnippet)
+            (yas-global-mode 1)
 
+            (require 'lsp-bridge)
+            (global-lsp-bridge-mode)
 
-;; cape
-(use-package cape)
-(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
-
-(fset #'jsonrpc--log-event #'ignore)
+            (unless (display-graphic-p)
+              (with-eval-after-load 'acm
+                (require 'acm-terminal)))))
