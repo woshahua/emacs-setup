@@ -8,14 +8,14 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(setenv "SHELL" "/usr/local/bin/zsh")
-(setq exec-path-from-shell-arguments '("-l"))
+;; (setq exec-path-from-shell-arguments '("-l"))
 (setq exec-path-from-shell-shell-name "/bin/zsh")
 (setq exec-path-from-shell-debug t)
 
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
+(load-theme 'monokai t)
 
 ;; straight
 (defvar bootstrap-version)
@@ -407,10 +407,6 @@
   :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
             :files (:defaults (:exclude "helm-org-ql.el"))))
 
-
-;; system style
-;; (load-theme 'spacemacs-dark t)
-
 ;; setup for orgmode operation
 ;;; setup for orgmode style
 (add-hook 'org-mode-hook #'org-modern-mode)
@@ -654,6 +650,16 @@
 (use-package apheleia
   :straight (apheleia :host github :repo "raxod502/apheleia")
   :config
+  (setf (alist-get 'prettier apheleia-formatters)
+        '(npx "prettier"
+              "--trailing-comma"  "es5"
+              "--bracket-spacing" "true"
+              "--single-quote"    "true"
+              "--semi"            "false"
+              "--print-width"     "100"
+	      "--tabWidth"          "4"
+              file))
+  (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
   (apheleia-global-mode t))
 
 
@@ -685,8 +691,32 @@
             (yas-global-mode 1)
 
             (require 'lsp-bridge)
-            (global-lsp-bridge-mode)
+	    (add-hook 'typescript-mode-hook #'lsp-bridge-mode)
+	    (add-hook 'typescriptreact-mode #'lsp-bridge-mode)
+	    (add-hook 'elisp-mode-hook #'lsp-bridge-mode)
 
             (unless (display-graphic-p)
               (with-eval-after-load 'acm
                 (require 'acm-terminal)))))
+
+;; setup robe for rails / ruby
+(use-package ruby-ts-mode :mode (("\\.rb\\'" . ruby-ts-mode)))
+
+(add-hook 'ruby-mode-hook 'robe-mode)
+(add-hook 'ruby-ts-mode-hook 'robe-mode)
+
+(eval-after-load 'company
+  '(push 'company-robe company-backends))
+
+;; setup rspec mode
+(require 'rspec-mode)
+(eval-after-load 'rspec-mode
+ '(rspec-install-snippets))
+
+;; rime
+(use-package rime
+  :custom
+  (default-input-method "rime"))
+
+(setq rime-translate-keybindings
+  '("C-f" "C-b" "C-n" "C-p" "C-g" "<left>" "<right>" "<up>" "<down>" "<prior>" "<next>" "<delete>"))
