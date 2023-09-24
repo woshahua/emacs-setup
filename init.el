@@ -355,7 +355,6 @@
 
 (provide 'init-modeline)
 ;;; init-modeline ends here
-
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
 (require 'awesome-pair)
 
@@ -655,7 +654,7 @@
               "--trailing-comma"  "es5"
               "--bracket-spacing" "true"
               "--single-quote"    "true"
-              "--semi"            "false"
+              "--semi"            "true"
               "--print-width"     "100"
 	      "--tabWidth"          "4"
               file))
@@ -675,6 +674,7 @@
 
 (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
 (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
+(bind-key (kbd "C-c r") 'lsp-bridge-rename)
 
 (unless (package-installed-p 'yasnippet)
   (package-install 'yasnippet))
@@ -716,7 +716,14 @@
 ;; rime
 (use-package rime
   :custom
+  (rime-librime-root "~/.emacs.d/librime/dist")
+  (rime-emacs-module-header-root "/Applications/Emacs.app/Contents/Resources/include/")
   (default-input-method "rime"))
 
 (setq rime-translate-keybindings
   '("C-f" "C-b" "C-n" "C-p" "C-g" "<left>" "<right>" "<up>" "<down>" "<prior>" "<next>" "<delete>"))
+
+(setq rime-disable-predicates
+      '(rime-predicate-evil-mode-p
+        rime-predicate-after-alphabet-char-p
+        rime-predicate-prog-in-code-p))
