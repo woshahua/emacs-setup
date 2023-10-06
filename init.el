@@ -15,7 +15,7 @@
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
-(load-theme 'monokai t)
+(load-theme 'atom-one-dark t)
 
 ;; straight
 (defvar bootstrap-version)
@@ -723,7 +723,51 @@
 (setq rime-translate-keybindings
   '("C-f" "C-b" "C-n" "C-p" "C-g" "<left>" "<right>" "<up>" "<down>" "<prior>" "<next>" "<delete>"))
 
+(setq rime-user-data-dir "~/rime-config/")
+
 (setq rime-disable-predicates
       '(rime-predicate-evil-mode-p
         rime-predicate-after-alphabet-char-p
         rime-predicate-prog-in-code-p))
+
+(setq rime-posframe-properties (list :internal-border-width 1
+                                          :font "Source Code Pro-14"))
+
+(setq word-wrap-by-category t)
+(setq default-input-method "rime"
+      rime-show-candidate 'posframe)
+
+
+;; doom-modeline
+(require 'doom-modeline)
+(doom-modeline-mode 1)
+
+
+;; pyqterminal test later maybe
+;; (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
+;; (require 'eaf)
+;; (require 'eaf-pyqterminal)
+
+
+;; sort-tab
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/sort-tab") ; add sort-tab to your load-path
+(require 'sort-tab)
+(sort-tab-mode 1)
+
+(global-set-key (kbd "s-1") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-2") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-3") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-4") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-5") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-6") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-7") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-8") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-9") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-0") 'sort-tab-select-visible-tab)
+(global-set-key (kbd "s-Q") 'sort-tab-close-all-tabs)
+(global-set-key (kbd "s-q") 'sort-tab-close-mode-tabs)
+(global-set-key (kbd "C-;") 'sort-tab-close-current-tab)
+
+;; forge setup
+(with-eval-after-load 'magit
+  (require 'forge))
