@@ -211,9 +211,18 @@
 ;; Activate detectino of Obsidian vault
 (global-obsidian-mode t)
 
-(use-package go-mode)
+;; go-mode setup
+(use-package go-mode
+  :ensure t
+  :commands go-mode
+  :config
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  )
+
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+(add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
 (add-hook 'go-mode-hook
           (lambda ()
@@ -224,6 +233,16 @@
 
 (add-hook 'go-mode-hook #'tree-sitter-mode)
 (add-hook 'go-mode-hook #'tree-sitter-hl-mode)
+
+(use-package swift-mode)
+(add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
+(add-hook 'swift-mode-hook #'tree-sitter-mode)
+(add-hook 'swift-mode-hook #'tree-sitter-hl-mode)
+;; dart-mode setup
+(use-package dart-mode)
+(add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode))
+(add-hook 'dart-mode-hook #'tree-sitter-mode)
+(add-hook 'dart-mode-hook #'tree-sitter-hl-mode)
 
 (use-package yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -509,7 +528,8 @@
                      fanyi-longman-provider)))
 ;; get code link on github
 (global-set-key (kbd "C-c g l") 'git-link)
-
+(add-to-list 'load-path
+              "/Users/han-ko/ghq/github.com/joaotavora/yasnippet")
 (require 'yasnippet)
 (yas-global-mode 1)
 
@@ -553,6 +573,7 @@
 (org-ai-global-mode)
 (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
 (org-ai-install-yasnippets) ; if you are using yasnippet and want `ai` snippets
+(setq org-ai-use-auth-source nil)
 
 ;; org-mode 换行问题
 (add-hook 'org-mode-hook 'visual-line-mode)
@@ -659,7 +680,7 @@
 	      "--tabWidth"          "4"
               file))
   (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
-  (apheleia-global-mode t))
+  )
 
 
 ;; setup eglot related thing
@@ -669,15 +690,12 @@
   (lsp-bridge-multi-lang-server-extension-list
     '((("ts" "tsx") . "typescript_eslint"))))
 
-(setq acm-enable-tabnine-helper 1)
+(setq acm-enable-tabnine-helper nil)
 (setq lsp-bridge-enable-hover-diagnostic t)
 
 (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
 (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
 (bind-key (kbd "C-c r") 'lsp-bridge-rename)
-
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
 
 (unless (display-graphic-p)
   (straight-use-package
@@ -693,6 +711,8 @@
             (require 'lsp-bridge)
 	    (add-hook 'typescript-mode-hook #'lsp-bridge-mode)
 	    (add-hook 'typescriptreact-mode #'lsp-bridge-mode)
+	    (add-hook 'go-mode-hook #'lsp-bridge-mode)
+	    (add-hook 'swift-mode-hook #'lsp-bridge-mode)
 	    (add-hook 'elisp-mode-hook #'lsp-bridge-mode)
 
             (unless (display-graphic-p)
@@ -771,3 +791,21 @@
 ;; forge setup
 (with-eval-after-load 'magit
   (require 'forge))
+
+;; auto-save
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
+(require 'auto-save)
+(auto-save-enable)
+
+(setq auto-save-silent t)   ; quietly save
+(setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
+
+;;; custom predicates if you don't want auto save.
+;;; disable auto save mode when current filetype is an gpg file.
+(setq auto-save-disable-predicates
+      '((lambda ()
+      (string-suffix-p
+      "gpg"
+      (file-name-extension (buffer-name)) t))))
+
+(bind-key (kbd "C-c e") 'eval-region)
