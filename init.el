@@ -8,14 +8,13 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;; read zsh config
 ;; (setq exec-path-from-shell-arguments '("-l"))
 (setq exec-path-from-shell-shell-name "/bin/zsh")
 (setq exec-path-from-shell-debug t)
 
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
-
-(load-theme 'atom-one-dark t)
 
 ;; straight
 (defvar bootstrap-version)
@@ -56,22 +55,7 @@
   (set-frame-position (selected-frame) 0 0)
   (set-frame-size (selected-frame) 91 80))
 
-;; treesit config
-(use-package tree-sitter
-  :ensure t
-  :config
-  ;; activate tree-sitter on any buffer containing code for which it has a parser available
-  (global-tree-sitter-mode)
-  ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
-  ;; by switching on and off
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs
-  :ensure t
-  :after tree-sitter)
-
-;; setup kotlin
-
+;; search using swiper
 ;; ref: https://dr-knz.net/a-tour-of-emacs-as-go-editor.html
 (require 'swiper)
 (global-set-key "\C-s" 'swiper)
@@ -175,77 +159,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(acm-backend-codeium-api-key "c7d24326-3dd7-41c8-9818-9400bf71304d")
+ '(custom-enabled-themes '(sanityinc-tomorrow-eighties))
  '(custom-safe-themes
-   '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
+   '("0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" "cd51c4e5a258ab9fd82de1fb4c0eee54326de5e307e3bf2895467ae103bc562b" "65c29375a6215a070bbc41af0a2dd4d3b2bf462b32e95d7fe4d8c86052ab0b9d" "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28" "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(elfeed-feeds
    '("https://www.fatbobman.com/feed.rss" "https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
+ '(org-agenda-files
+   '("~/Library/Mobile Documents/com~apple~CloudDocs/org-roam/20231219131733-task_yokoyan.org" "/Users/han-ko/gtd/inbox.org" "/Users/han-ko/gtd/gtd.org" "/Users/han-ko/gtd/done.org" "/Users/han-ko/gtd/tickler.org"))
  '(package-selected-packages
    '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
 
 ;; setup for coding
-;;; typescript mode
-;;; ruby
-(use-package ruby-mode)
-(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
-
 ;;; python
 (use-package python-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-
-;; obsidian setup
-(require 'obsidian)
-(obsidian-specify-path "/Users/han-ko/Library/Mobile Documents/iCloud~md~obsidian/Documents")
-;; If you want a different directory of `obsidian-capture':
-(setq obsidian-inbox-directory "record")
-
-;; Replace standard command with Obsidian.el's in obsidian vault:
-(bind-key (kbd "C-c o") 'obsidian-follow-link-at-point 'obsidian-mode-map)
-(bind-key (kbd "C-c l") 'obsidian-insert-link 'obsidian-mode-map)
-(bind-key (kbd "C-c m") 'obsidian-capture 'obsidian-mode-map)
-(bind-key (kbd "C-c m") 'obsidian-capture)
-(bind-key (kbd "C-c j") 'obsidian-jump)
-(bind-key (kbd "C-c j") 'obsidian-jump 'obsidian-mode-map)
-
-
-;; Use either `obsidian-insert-wikilink' or `obsidian-insert-link':
-;; Activate detectino of Obsidian vault
-(global-obsidian-mode t)
-
-;; go-mode setup
-(use-package go-mode
-  :ensure t
-  :commands go-mode
-  :config
-  (setq gofmt-command "goimports")
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  )
-
-(autoload 'go-mode "go-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-(add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
-
-(add-hook 'go-mode-hook
-          (lambda ()
-	    (setq gofmt-command "goimports")
-            (add-hook 'before-save-hook 'gofmt-before-save)
-            (setq tab-width 4)
-            (setq indent-tabs-mode 1)))
-
-(add-hook 'go-mode-hook #'tree-sitter-mode)
-(add-hook 'go-mode-hook #'tree-sitter-hl-mode)
-
-(use-package swift-mode)
-(add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
-(add-hook 'swift-mode-hook #'tree-sitter-mode)
-(add-hook 'swift-mode-hook #'tree-sitter-hl-mode)
-;; dart-mode setup
-(use-package dart-mode)
-(add-to-list 'auto-mode-alist '("\\.dart\\'" . dart-mode))
-(add-hook 'dart-mode-hook #'tree-sitter-mode)
-(add-hook 'dart-mode-hook #'tree-sitter-hl-mode)
-
-(use-package yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 
 ;; move between window
 (use-package ace-window)
@@ -374,9 +301,10 @@
 
 (provide 'init-modeline)
 ;;; init-modeline ends here
+
+;; awesome-pair 括号补全
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
 (require 'awesome-pair)
-
 (dolist (hook (list
                'c-mode-common-hook
                'c-mode-hook
@@ -406,7 +334,6 @@
                'minibuffer-inactive-mode-hook
                ))
   (add-hook hook '(lambda () (awesome-pair-mode 1))))
-
 (define-key awesome-pair-mode-map (kbd "(") 'awesome-pair-open-round)
 (define-key awesome-pair-mode-map (kbd "[") 'awesome-pair-open-bracket)
 (define-key awesome-pair-mode-map (kbd "{") 'awesome-pair-open-curly)
@@ -425,14 +352,6 @@
   :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
             :files (:defaults (:exclude "helm-org-ql.el"))))
 
-;; setup for orgmode operation
-;;; setup for orgmode style
-(add-hook 'org-mode-hook #'org-modern-mode)
-(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-
-;; Minimal UI
-(require 'org-modern)
-
 ;; Choose some fonts
 ;;(set-face-attribute 'default nil :family "Iosevka")
 ;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
@@ -449,32 +368,7 @@
   (set-face-foreground face (face-attribute 'default :background)))
 (set-face-background 'fringe (face-attribute 'default :background))
 
-(setq
- ;; Edit settings
- org-auto-align-tags nil
- org-tags-column 0
- org-catch-invisible-edits 'show-and-error
- org-special-ctrl-a/e t
- org-insert-heading-respect-content t
-
- ;; Org styling, hide markup etc.
- org-hide-emphasis-markers t
- org-pretty-entities t
- org-ellipsis "…"
-
- ;; Agenda styling
- org-agenda-tags-column 0
- org-agenda-block-separator ?─
- org-agenda-time-grid
- '((daily today require-timed)
-   (800 1000 1200 1400 1600 1800 2000)
-   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
- org-agenda-current-time-string
- "⭠ now ─────────────────────────────────────────────────")
-
-(global-org-modern-mode)
-
-;;; org-capture
+;; org setup
 (require 'org)
 (global-set-key (kbd "C-c c") 'org-capture)
 ;;;; set files for org-agenda-files
@@ -497,24 +391,6 @@
 
 (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
-
-;; elfeed
-(use-package elfeed
-  :ensure t
-  :config
-  (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
-        elfeed-show-entry-switch 'display-buffer)
-  (bind-key "r" #'elfeed-update elfeed-search-mode-map)
-  :bind
-  ("C-x w" . elfeed ))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 (use-package fanyi
   :ensure t
   :custom
@@ -530,14 +406,15 @@
 (global-set-key (kbd "C-c g l") 'git-link)
 (add-to-list 'load-path
               "/Users/han-ko/ghq/github.com/joaotavora/yasnippet")
+
+;; yasnippet configuration
 (require 'yasnippet)
 (yas-global-mode 1)
 
-;; temporary disable lsp-bridge
 ;; lsp-bridge configuration
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
 
-;; org-roam mode
+;; org-roam configuration
 (use-package org-roam
   :ensure t
   :custom
@@ -556,7 +433,6 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
-
 ;; copilot
 (use-package copilot
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
@@ -566,45 +442,24 @@
 
 ;;; bind completion key
 (define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
-
 (require 'org)
+
+;; org-ai setup
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/rksm/org-ai")
 (require 'org-ai)
 (add-hook 'org-mode-hook #'org-ai-mode)
 (org-ai-global-mode)
 (setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
 (org-ai-install-yasnippets) ; if you are using yasnippet and want `ai` snippets
-(setq org-ai-use-auth-source nil)
 
 ;; org-mode 换行问题
 (add-hook 'org-mode-hook 'visual-line-mode)
-
-;; org-ai cache problem
 
 ;; pangu-spacing
 ;;; https://github.com/coldnew/pangu-spacing
 (require 'pangu-spacing)
 (global-pangu-spacing-mode 1)
 (setq pangu-spacing-real-insert-separtor t)
-
-
-(setq org-startup-folded t)
-(defun my-org-mode-auto-fold ()
-  (when (and (buffer-file-name)
-             (and (eq (file-name-extension (buffer-file-name)) "org")
-                  (not (file-exists-p (buffer-file-name)))))
-    (org-cycle)))
-
-(add-hook 'org-mode-hook 'my-org-mode-auto-fold)
-
-;; ob-swiftui
-;;; https://github.com/xenodium/ob-swiftui
-(require 'ob-swiftui)
-(ob-swiftui-setup)
-
-;; comment-region
-;;; TODO: comment line is better usage
-(global-set-key (kbd "C-M-c") 'comment-region)
-(global-set-key (kbd "C-M-u") 'uncomment-region)
 
 ;; nerd-icons
 (require 'nerd-icons)
@@ -614,10 +469,7 @@
 (require 'nerd-icons-dired)
 (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
 
-(use-package typescript-mode
-  :mode (("\.ts\'" . typescript-mode)
-	 ("\.tsx\'" . typescriptreact-mode)))
-
+;; yasnippet
 (use-package yasnippet
   :diminish yas-minor-mode
   :hook ((prog-mode org-mode) . yas-minor-mode)
@@ -639,32 +491,6 @@
   :defer t
   :after yasnippet)
 
-;; tree-sitter typescript
-(use-package typescript-mode
-  :after tree-sitter
-  :config
-  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
-  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
-  (define-derived-mode typescriptreact-mode typescript-mode
-    "TypeScript TSX")
-
-  ;; use our derived mode for tsx files
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
-  ;; by default, typescript-mode is mapped to the treesitter typescript parser
-  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
-  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
-
-;; setup typescript
-(use-package tsi
-  :after tree-sitter
-  :quelpa (tsi :fetcher github :repo "orzechowskid/tsi.el")
-  ;; define autoload definitions which when actually invoked will cause package to be loaded
-  :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
-  :init
-  (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
-  (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
-  (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
-  (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
 
 ;; autoformat
 (use-package apheleia
@@ -683,15 +509,17 @@
   )
 
 
-;; setup eglot related thing
+;; setup lsp-bridge
 (use-package lsp-bridge
   :custom
   (lsp-bridge-signature-function 'eldoc-message)
   (lsp-bridge-multi-lang-server-extension-list
-    '((("ts" "tsx") . "typescript_eslint"))))
+    '((("ts" "tsx") . "typescript_eslint")
+      (("py") . "pyright_ruff"))))
 
 (setq acm-enable-tabnine-helper nil)
 (setq lsp-bridge-enable-hover-diagnostic t)
+(setq lsp-bridge-code-format t)
 
 (bind-key (kbd "C-c d") 'lsp-bridge-find-def)
 (bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
@@ -703,6 +531,7 @@
   (straight-use-package
    '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
 
+;; lsp-bridge hooks
 (add-hook 'emacs-startup-hook
           (lambda ()
             (require 'yasnippet)
@@ -712,26 +541,16 @@
 	    (add-hook 'typescript-mode-hook #'lsp-bridge-mode)
 	    (add-hook 'typescriptreact-mode #'lsp-bridge-mode)
 	    (add-hook 'go-mode-hook #'lsp-bridge-mode)
-	    (add-hook 'swift-mode-hook #'lsp-bridge-mode)
 	    (add-hook 'elisp-mode-hook #'lsp-bridge-mode)
+	    (ddd-hook 'python-mode-hook #'lsp-bridge-mode)
 
             (unless (display-graphic-p)
               (with-eval-after-load 'acm
                 (require 'acm-terminal)))))
 
-;; setup robe for rails / ruby
-(use-package ruby-ts-mode :mode (("\\.rb\\'" . ruby-ts-mode)))
-
-(add-hook 'ruby-mode-hook 'robe-mode)
-(add-hook 'ruby-ts-mode-hook 'robe-mode)
-
-(eval-after-load 'company
-  '(push 'company-robe company-backends))
-
-;; setup rspec mode
-(require 'rspec-mode)
-(eval-after-load 'rspec-mode
- '(rspec-install-snippets))
+;; setup python
+(use-package python-mode :mode (("\\.py\\'" . python-mode)))
+(add-hook 'python-mode-hook 'python-mode)
 
 ;; rime
 (use-package rime
@@ -758,48 +577,21 @@
       rime-show-candidate 'posframe)
 
 
+(setq doom-modeline-support-imenu t)
 ;; doom-modeline
 (require 'doom-modeline)
 (doom-modeline-mode 1)
-
-
-;; pyqterminal test later maybe
-;; (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
-;; (require 'eaf)
-;; (require 'eaf-pyqterminal)
-
-
-;; sort-tab
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/sort-tab") ; add sort-tab to your load-path
-(require 'sort-tab)
-(sort-tab-mode 1)
-
-(global-set-key (kbd "s-1") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-2") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-3") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-4") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-5") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-6") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-7") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-8") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-9") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-0") 'sort-tab-select-visible-tab)
-(global-set-key (kbd "s-Q") 'sort-tab-close-all-tabs)
-(global-set-key (kbd "s-q") 'sort-tab-close-mode-tabs)
-(global-set-key (kbd "C-;") 'sort-tab-close-current-tab)
-
-;; forge setup
-(with-eval-after-load 'magit
-  (require 'forge))
+(setq doom-modeline-project-detection 'auto)
+(setq doom-modeline-icon t)
+(setq doom-modeline-major-mode-color-icon t)
+(setq doom-modeline-buffer-state-icon t)
 
 ;; auto-save
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
 (require 'auto-save)
 (auto-save-enable)
 
-(setq auto-save-silent t)   ; quietly save
-(setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
-
+(setq auto-save-silent t)   ; quietly save (setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
 ;;; custom predicates if you don't want auto save.
 ;;; disable auto save mode when current filetype is an gpg file.
 (setq auto-save-disable-predicates
@@ -808,4 +600,78 @@
       "gpg"
       (file-name-extension (buffer-name)) t))))
 
-(bind-key (kbd "C-c e") 'eval-region)
+(defun nerd-icon-for-tags (tags)
+  "Generate Nerd Font icon based on tags.
+  Returns default if no match."
+  (cond ((member "youtube" tags)  (nerd-icons-faicon "nf-fa-youtube_play" :face '(:foreground "#FF0200")))
+        ((member "instagram" tags) (nerd-icons-faicon "nf-fa-instagram" :face '(:foreground "#FF00B9")))
+        ((member "emacs" tags) (nerd-icons-sucicon "nf-custom-emacs" :face '(:foreground "#9A5BBE")))
+        ((member "github" tags) (nerd-icons-faicon "nf-fa-github"))
+        (t (nerd-icons-faicon "nf-fae-feedly" :face '(:foreground "#2AB24C")))))
+
+
+(defun dss/-org-ai-after-chat-insertion-hook (type _text)
+  (when (and (eq type 'end) (eq major-mode 'org-mode) (memq 'org-indent-mode minor-mode-list))
+    (org-indent-indent-buffer)))
+(add-hook 'org-ai-after-chat-insertion-hook #'dss/-org-ai-after-chat-insertion-hook)
+
+(org-ql-search (org-agenda-files)
+  '(ts :from -7 :to today)
+  :title "Recent Items"
+  :sort '(todo priority date)
+  :super-groups '((:auto-ts t)))
+
+;; complete the block
+(bind-key (kbd "C-c a c") 'org-ai-complete-block)
+
+;; setup auth-sources
+(setq auth-sources
+    '((:source "~/authinfo.gpg")))
+
+
+;; org-mode style
+(add-to-list 'load-path "/Users/han-ko/ghq/github.com/tonyaldon/org-bars")
+(require 'org-bars)
+(add-hook 'org-mode-hook 'org-bars-mode)
+
+(setq org-startup-indented t)    ;; 見出しをインデント
+(setq org-indent-mode-turns-on-hiding-stars nil)  ;; 見出しをインデントした時にアスタリスクが減るのを防ぐ
+(setq org-indent-indentation-per-level 4)  ;; インデントの幅を設定
+(setq org-startup-folded 'content)  ;; 見出しの初期状態（見出しだけ表示）
+(setq org-stratup-with-inline-images t)  ;; インライン画像を表示
+
+;; org-download
+(require 'org-download)
+(add-hook 'dired-mode-hook 'org-download-enable)
+
+;; Minimal UI
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+
+;; Add frame borders and window dividers
+(modify-all-frames-parameters
+ '((right-divider-width . 40)
+   (internal-border-width . 40)))
+(dolist (face '(window-divider
+                window-divider-first-pixel
+                window-divider-last-pixel))
+  (face-spec-reset-face face)
+  (set-face-foreground face (face-attribute 'default :background)))
+(set-face-background 'fringe (face-attribute 'default :background))
+
+;; setup python interpreter
+  (setq python-shell-interpreter "jupyter"
+        python-shell-interpreter-args "console --simple-prompt"
+        python-shell-prompt-detect-failure-warning nil)
+
+
+;; setup ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(setq ibuffer-expert t)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
