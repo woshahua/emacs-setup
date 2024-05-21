@@ -449,7 +449,7 @@
 (require 'org-ai)
 (add-hook 'org-mode-hook #'org-ai-mode)
 (org-ai-global-mode)
-(setq org-ai-default-chat-model "gpt-4") ; if you are on the gpt-4 beta:
+(setq org-ai-default-chat-model "gpt-4o") ; if you are on the gpt-4 beta:
 (org-ai-install-yasnippets) ; if you are using yasnippet and want `ai` snippets
 
 ;; org-mode 换行问题
@@ -538,9 +538,6 @@
             (yas-global-mode 1)
 
             (require 'lsp-bridge)
-	    (add-hook 'typescript-mode-hook #'lsp-bridge-mode)
-	    (add-hook 'typescriptreact-mode #'lsp-bridge-mode)
-	    (add-hook 'go-mode-hook #'lsp-bridge-mode)
 	    (add-hook 'elisp-mode-hook #'lsp-bridge-mode)
 	    (ddd-hook 'python-mode-hook #'lsp-bridge-mode)
 
@@ -676,25 +673,24 @@
  )
 
 ;; comment tags
-(autoload 'comment-tags-mode "comment-tags-mode")
-(setq comment-tags-keymap-prefix (kbd "C-c t"))
-(with-eval-after-load "comment-tags"
-  (setq comment-tags-keyword-faces
-        `(("TODO" . ,(list :weight 'bold :foreground "#28ABE3"))
-          ("FIXME" . ,(list :weight 'bold :foreground "#DB3340"))
-          ("BUG" . ,(list :weight 'bold :foreground "#DB3340"))
-          ("HACK" . ,(list :weight 'bold :foreground "#E8B71A"))
-          ("KLUDGE" . ,(list :weight 'bold :foreground "#E8B71A"))
-          ("XXX" . ,(list :weight 'bold :foreground "#F7EAC8"))
-          ("INFO" . ,(list :weight 'bold :foreground "#F7EAC8"))
-          ("DONE" . ,(list :weight 'bold :foreground "#1FDA9A"))))
-  (setq comment-tags-comment-start-only t
-        comment-tags-require-colon t
-        comment-tags-case-sensitive t
-        comment-tags-show-faces t
-        comment-tags-lighter nil))
-(add-hook 'prog-mode-hook 'comment-tags-mode)
-
+;; (autoload 'comment-tags-mode "comment-tags-mode")
+;; (setq comment-tags-keymap-prefix (kbd "C-c t"))
+;; (with-eval-after-load "comment-tags"
+;;   (setq comment-tags-keyword-faces
+;;         `(("TODO" . ,(list :weight 'bold :foreground "#28ABE3"))
+;;           ("FIXME" . ,(list :weight 'bold :foreground "#DB3340"))
+;;           ("BUG" . ,(list :weight 'bold :foreground "#DB3340"))
+;;           ("HACK" . ,(list :weight 'bold :foreground "#E8B71A"))
+;;           ("KLUDGE" . ,(list :weight 'bold :foreground "#E8B71A"))
+;;           ("XXX" . ,(list :weight 'bold :foreground "#F7EAC8"))
+;;           ("INFO" . ,(list :weight 'bold :foreground "#F7EAC8"))
+;;           ("DONE" . ,(list :weight 'bold :foreground "#1FDA9A"))))
+;;   (setq comment-tags-comment-start-only t
+;;         comment-tags-require-colon t
+;;         comment-tags-case-sensitive t
+;;         comment-tags-show-faces t
+;;         comment-tags-lighter nil))
+;; (add-hook 'prog-mode-hook 'comment-tags-mode)
 
 ;; super agenda
 (let ((org-super-agenda-groups
@@ -739,3 +735,12 @@
          ;; match any of these groups, with the default order position of 99
          )))
   (org-agenda nil "a"))
+
+;; mermaid
+(setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc")
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((mermaid . t)
+   (scheme .t)
+   ))
