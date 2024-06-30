@@ -1,3 +1,6 @@
+;; fix python-mode bug
+(setq elpy-shell-echo-output nil)
+
 ;; use shell setup
 ;; frame
 (defvar efs/frame-transparency '(90 . 90))
@@ -546,7 +549,6 @@
                 (require 'acm-terminal)))))
 
 ;; setup python
-(use-package python-mode :mode (("\\.py\\'" . python-mode)))
 (add-hook 'python-mode-hook 'python-mode)
 
 ;; rime
