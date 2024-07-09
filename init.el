@@ -307,6 +307,7 @@
 
 ;; awesome-pair 括号补全
 (add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
+
 (require 'awesome-pair)
 (dolist (hook (list
                'c-mode-common-hook
@@ -370,45 +371,6 @@
   (face-spec-reset-face face)
   (set-face-foreground face (face-attribute 'default :background)))
 (set-face-background 'fringe (face-attribute 'default :background))
-
-;; org setup
-(require 'org)
-(global-set-key (kbd "C-c c") 'org-capture)
-;;;; set files for org-agenda-files
-(setq org-agenda-files '("~/gtd/inbox.org"
-                         "~/gtd/gtd.org"
-			 "~/gtd/done.org"
-                         "~/gtd/tickler.org"))
-
-(setq org-capture-templates '(("t" "Todo [inbox]" entry
-                               (file+headline "~/gtd/inbox.org" "Tasks")
-                               "* TODO %i%?")
-                              ("T" "Tickler" entry
-                               (file+headline "~/gtd/tickler.org" "Tickler")
-                               "* %i%? \n %U")))
-
-(setq org-refile-targets '(("~/gtd/gtd.org" :maxlevel . 3)
-                           ("~/gtd/someday.org" :level . 1)
-                           ("~/gtd/done.org" :level . 1)
-                           ("~/gtd/tickler.org" :maxlevel . 2)))
-
-(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-
-(use-package fanyi
-  :ensure t
-  :custom
-  (fanyi-providers '(;; 海词
-                     fanyi-haici-provider
-                     ;; 有道同义词词典
-                     fanyi-youdao-thesaurus-provider
-                     ;; Etymonline
-                     fanyi-etymon-provider
-                     ;; Longman
-                     fanyi-longman-provider)))
-;; get code link on github
-(global-set-key (kbd "C-c g l") 'git-link)
-(add-to-list 'load-path
-              "/Users/han-ko/ghq/github.com/joaotavora/yasnippet")
 
 ;; yasnippet configuration
 (require 'yasnippet)
@@ -510,46 +472,6 @@
               file))
   (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
   )
-
-
-;; setup lsp-bridge
-(use-package lsp-bridge
-  :custom
-  (lsp-bridge-signature-function 'eldoc-message)
-  (lsp-bridge-multi-lang-server-extension-list
-    '((("ts" "tsx") . "typescript_eslint")
-      (("py") . "pyright_ruff"))))
-
-(setq acm-enable-tabnine-helper nil)
-(setq lsp-bridge-enable-hover-diagnostic t)
-(setq lsp-bridge-code-format t)
-
-(bind-key (kbd "C-c d") 'lsp-bridge-find-def)
-(bind-key (kbd "C-c i") 'lsp-bridge-find-impl)
-(bind-key (kbd "C-c r") 'lsp-bridge-rename)
-
-(unless (display-graphic-p)
-  (straight-use-package
-   '(popon :host nil :repo "https://codeberg.org/akib/emacs-popon.git"))
-  (straight-use-package
-   '(acm-terminal :host github :repo "twlz0ne/acm-terminal")))
-
-;; lsp-bridge hooks
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (require 'yasnippet)
-            (yas-global-mode 1)
-
-            (require 'lsp-bridge)
-	    (add-hook 'elisp-mode-hook #'lsp-bridge-mode)
-	    (ddd-hook 'python-mode-hook #'lsp-bridge-mode)
-
-            (unless (display-graphic-p)
-              (with-eval-after-load 'acm
-                (require 'acm-terminal)))))
-
-;; setup python
-(add-hook 'python-mode-hook 'python-mode)
 
 ;; rime
 (use-package rime
@@ -746,3 +668,53 @@
  '((mermaid . t)
    (scheme .t)
    ))
+
+
+;; setup org-mode
+;; Must do this so the agenda knows where to look for my files
+(setq org-agenda-files '("~/org"))
+
+;; When a TODO is set to a done state, record a timestamp
+(setq org-log-done 'time)
+
+;; Follow the links
+(setq org-return-follows-link  t)
+
+;; Associate all org files with org mode
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+;; Make the indentation look nicer
+(add-hook 'org-mode-hook 'org-indent-mode)
+
+;; Remap the change priority keys to use the UP or DOWN key
+(define-key org-mode-map (kbd "C-c <up>") 'org-priority-up)
+(define-key org-mode-map (kbd "C-c <down>") 'org-priority-down)
+
+;; Shortcuts for storing links, viewing the agenda, and starting a capture
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(define-key global-map "\C-cc" 'org-capture)
+
+;; When you want to change the level of an org item, use SMR
+(define-key org-mode-map (kbd "C-c C-g C-r") 'org-shiftmetaright)
+
+;; Hide the markers so you just see bold text as BOLD-TEXT and not *BOLD-TEXT*
+(setq org-hide-emphasis-markers t)
+
+;; Wrap the lines in org mode so that things are easier to read
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+(setq org-capture-templates
+      '(
+        ("j" "Work Log Entry"
+         entry (file+datetree "~/org/work-log.org")
+         "* %?"
+         :empty-lines 0)
+        )
+      '(
+        ("n" "Note"
+         entry (file+headline "~/org/notes.org" "Random Notes")
+         "** %?"
+         :empty-lines 0)
+        )
+      )
