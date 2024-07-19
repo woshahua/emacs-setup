@@ -299,8 +299,8 @@
        ((buffer-encoding-abbrev line-column) :separator "|" :priority 96)
        (global :when active)
        (hud :priority 99)))
-
     (setq-default mode-line-format '("%e" (:eval (spaceline-ml-custom))))))
+
 
 (provide 'init-modeline)
 ;;; init-modeline ends here
@@ -799,16 +799,31 @@
       )
 
 
+;; corfu
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-prefix 1)
+  :config
+  (global-corfu-mode))
+
 ;; eglot setup
 (use-package eglot
   :ensure t
+  :hook ((python-mode . eglot-ensure)
+         (js-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)
+         (java-mode . eglot-ensure))
   :config
-  (add-hook 'python-mode-hook 'eglot-ensure)
-  (add-hook 'js-mode-hook 'eglot-ensure)
-  (add-hook 'c-mode-hook 'eglot-ensure)
-  (add-hook 'c++-mode-hook 'eglot-ensure)
-  (add-hook 'java-mode-hook 'eglot-ensure)
-  (add-hook 'go-mode-hook 'eglot-ensure))
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (corfu-mode))))
+
+;;; 优化补全性能
+(setq read-process-output-max (* 1024 1024)) ;; 1MB
+(setq gc-cons-threshold 100000000) ;; 100MB
 
 
 (use-package tree-sitter
@@ -827,3 +842,7 @@
   ;; 将 Ivy 的所有命令都使用 posframe 显示
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
   (ivy-posframe-mode 1))
+
+
+(use-package discover-my-major
+  :bind ("C-h C-m" . discover-my-major))
