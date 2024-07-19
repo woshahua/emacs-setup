@@ -376,9 +376,6 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-;; lsp-bridge configuration
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/lsp-bridge")
-
 ;; org-roam configuration
 (use-package org-roam
   :ensure t
@@ -800,3 +797,33 @@
         ("CRITICAL"  . (:foreground "red1"          :weight bold))
         )
       )
+
+
+;; eglot setup
+(use-package eglot
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook 'eglot-ensure)
+  (add-hook 'js-mode-hook 'eglot-ensure)
+  (add-hook 'c-mode-hook 'eglot-ensure)
+  (add-hook 'c++-mode-hook 'eglot-ensure)
+  (add-hook 'java-mode-hook 'eglot-ensure)
+  (add-hook 'go-mode-hook 'eglot-ensure))
+
+
+(use-package tree-sitter
+  :ensure t
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs
+  :ensure t)
+
+
+(use-package ivy-posframe
+  :ensure t
+  :config
+  ;; 将 Ivy 的所有命令都使用 posframe 显示
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+  (ivy-posframe-mode 1))
