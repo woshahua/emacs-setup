@@ -1,7 +1,6 @@
 ;; fix python-mode bug
 (setq elpy-shell-echo-output nil)
 
-;; use shell setup
 ;; frame
 (defvar efs/frame-transparency '(90 . 90))
 (set-face-attribute 'default nil :font "Source Code Pro-14")
@@ -153,7 +152,7 @@
   :config
   (counsel-mode 1))
 
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/thing-edit")
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/thing-edit")
 (require 'thing-edit)
 
 (custom-set-variables
@@ -164,13 +163,15 @@
  '(acm-backend-codeium-api-key "c7d24326-3dd7-41c8-9818-9400bf71304d")
  '(custom-enabled-themes '(sanityinc-tomorrow-eighties))
  '(custom-safe-themes
-   '("0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" "cd51c4e5a258ab9fd82de1fb4c0eee54326de5e307e3bf2895467ae103bc562b" "65c29375a6215a070bbc41af0a2dd4d3b2bf462b32e95d7fe4d8c86052ab0b9d" "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28" "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
+   '("d1b46cf4414713c0901c3d77b640d857614b220e56c23f00c2fcfe5a2406b05a" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" "cd51c4e5a258ab9fd82de1fb4c0eee54326de5e307e3bf2895467ae103bc562b" "65c29375a6215a070bbc41af0a2dd4d3b2bf462b32e95d7fe4d8c86052ab0b9d" "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28" "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
  '(elfeed-feeds
    '("https://www.fatbobman.com/feed.rss" "https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
  '(org-agenda-files
-   '("~/Library/Mobile Documents/com~apple~CloudDocs/org-roam/20231219131733-task_yokoyan.org" "/Users/han-ko/gtd/inbox.org" "/Users/han-ko/gtd/gtd.org" "/Users/han-ko/gtd/done.org" "/Users/han-ko/gtd/tickler.org"))
+   '("~/Library/Mobile Documents/com~apple~CloudDocs/org-roam/20231219131733-task_yokoyan.org" "/Users/gaohang/gtd/inbox.org" "/Users/gaohang/gtd/gtd.org" "/Users/gaohang/gtd/done.org" "/Users/gaohang/gtd/tickler.org"))
  '(package-selected-packages
-   '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil)))
+   '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil))
+ '(package-vc-selected-packages
+   '((eglot-booster :vc-backend Git :url "https://github.com/jdtsmith/eglot-booster"))))
 
 ;; setup for coding
 ;;; python
@@ -306,7 +307,7 @@
 ;;; init-modeline ends here
 
 ;; awesome-pair 括号补全
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
 
 (require 'awesome-pair)
 (dolist (hook (list
@@ -380,7 +381,7 @@
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "/Users/han-ko/Library/Mobile Documents/com~apple~CloudDocs/org-roam/"))
+  (org-roam-directory (file-truename "/Users/gaohang/Library/Mobile Documents/com~apple~CloudDocs/org-roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
@@ -407,7 +408,7 @@
 (require 'org)
 
 ;; org-ai setup
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/rksm/org-ai")
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/rksm/org-ai")
 (require 'org-ai)
 (add-hook 'org-mode-hook #'org-ai-mode)
 (org-ai-global-mode)
@@ -505,7 +506,7 @@
 (setq doom-modeline-buffer-state-icon t)
 
 ;; auto-save
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
 (require 'auto-save)
 (auto-save-enable)
 
@@ -547,7 +548,7 @@
     '((:source "~/authinfo.gpg")))
 
 ;; org-mode style
-(add-to-list 'load-path "/Users/han-ko/ghq/github.com/tonyaldon/org-bars")
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/tonyaldon/org-bars")
 (require 'org-bars)
 (add-hook 'org-mode-hook 'org-bars-mode)
 
@@ -798,34 +799,6 @@
         )
       )
 
-
-;; corfu
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-auto t)
-  (corfu-auto-prefix 1)
-  :config
-  (global-corfu-mode))
-
-;; eglot setup
-(use-package eglot
-  :ensure t
-  :hook ((python-mode . eglot-ensure)
-         (js-mode . eglot-ensure)
-         (c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)
-         (java-mode . eglot-ensure))
-  :config
-  (add-hook 'eglot-managed-mode-hook
-            (lambda ()
-              (corfu-mode))))
-
-;;; 优化补全性能
-(setq read-process-output-max (* 1024 1024)) ;; 1MB
-(setq gc-cons-threshold 100000000) ;; 100MB
-
-
 (use-package tree-sitter
   :ensure t
   :config
@@ -835,7 +808,6 @@
 (use-package tree-sitter-langs
   :ensure t)
 
-
 (use-package ivy-posframe
   :ensure t
   :config
@@ -843,6 +815,22 @@
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
   (ivy-posframe-mode 1))
 
-
 (use-package discover-my-major
   :bind ("C-h C-m" . discover-my-major))
+
+;; lsp-bridge setup
+(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/lsp-bridge")
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
+
+;; eglot setup
+(use-package eglot-booster
+	:after eglot
+	:config	(eglot-booster-mode))
+
+(add-hook 'sh-mode-hook 'eglot-ensure)
+(add-hook 'go-mode-hook 'eglot-ensure)
+(add-hook 'emacs-lisp-mode-hook 'eglot-ensure)
+(add-hook 'protobuf-mode-hook 'eglot-ensure)
