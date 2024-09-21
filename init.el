@@ -834,3 +834,150 @@
 (add-hook 'go-mode-hook 'eglot-ensure)
 (add-hook 'emacs-lisp-mode-hook 'eglot-ensure)
 (add-hook 'protobuf-mode-hook 'eglot-ensure)
+
+;; theme
+(load-theme 'ef-elea-dark)
+
+;; Eglot 配置
+(use-package eglot
+  :hook ((python-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         (sh-mode . eglot-ensure)
+	 (protobuf-mode-hook . eglot-ensure)
+	 (go-mode . eglot-ensure)
+         (emacs-lisp-mode . eglot-ensure))
+  :config
+  (setq eglot-sync-connect 1
+        eglot-connect-timeout 10
+        eglot-autoshutdown t
+        eglot-send-changes-idle-time 0.5
+        eglot-events-buffer-size 0)
+  :bind (:map eglot-mode-map
+              ("C-c a" . eglot-code-actions)
+              ("C-c r" . eglot-rename)
+              ("C-c o" . eglot-code-action-organize-imports)))
+
+;; Xref 配置
+(use-package xref
+  :bind (("M-." . xref-find-definitions)
+         ("M-?" . xref-find-references)))
+
+;; Corfu 配置
+(use-package corfu
+  :init
+  (global-corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-separator ?\s)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match t)
+  (corfu-preview-current nil)
+  (corfu-preselect-first nil)
+  (corfu-on-exact-match nil)
+  (corfu-echo-documentation nil)
+  (corfu-scroll-margin 5))
+
+;; Flymake 配置
+(use-package flymake
+  :ensure t
+  :hook (eglot-managed-mode . flymake-mode)
+  :bind (nil
+         :map flymake-mode-map
+         ("C-c C-p" . flymake-goto-prev-error)
+         ("C-c C-n" . flymake-goto-next-error))
+  :config
+  (set-face-background 'flymake-errline "red4")
+  (set-face-background 'flymake-warnline "DarkOrange"))
+
+(use-package flymake-diagnostic-at-point
+  :ensure t
+  :after flymake
+  :config
+  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
+
+;; Eldoc 配置
+(use-package eldoc
+  :custom
+  (eldoc-echo-area-use-multiline-p nil))
+
+;; Hideshow 配置
+(use-package hideshow
+  :hook (prog-mode . hs-minor-mode))
+
+;; Tree-sitter 配置 (Emacs 29+)
+(when (>= emacs-major-version 29)
+  (use-package treesit
+    :config
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)))
+
+;; Helpful 配置
+(use-package helpful
+  :bind
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-key] . helpful-key))
+
+;; 性能优化
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+(setq gc-cons-threshold 100000000)
+(setq create-lockfiles nil)
+
+;; 自动格式化
+(add-hook 'before-save-hook 'eglot-format-buffer)
+
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-font-lock-level 4)
+  :config
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode))
+
+(use-package flymake-ruff
+  :ensure t
+  :hook (eglot-managed-mode-hook . (lambda ()
+                                     (when (derived-mode-p 'python-mode 'python-ts-mode)
+                                       (flymake-ruff-load))))
+  :config
+  (setq flymake-ruff--default-configs '("ruff.toml" ".ruff.toml")))
+
+(use-package reformatter
+  :hook
+  (python-mode-hook . ruff-format-on-save-mode)
+  :config
+  (reformatter-define ruff-format
+    :program "ruff"
+    :args `("format" "--stdin-filename", buffer-file-name "-")))
+
+(defun ruff-fix-buffer ()
+  "Use ruff to fix lint violations in the current buffer."
+  (interactive)
+  (let* ((temporary-file-directory (if (buffer-file-name)
+                                       (file-name-directory (buffer-file-name))
+                                     temporary-file-directory))
+         (temporary-file-name-suffix (format "--%s" (if (buffer-file-name)
+                                                                 (file-name-nondirectory (buffer-file-name))
+                                                                "")))
+         (temp-file (make-temp-file "temp-ruff-" nil temporary-file-name-suffix))
+         (current-point (point)))
+    (write-region (point-min) (point-max) temp-file nil)
+    (shell-command-to-string (format "ruff check --fix %s" temp-file))
+    (erase-buffer)
+    (insert-file-contents temp-file)
+    (delete-file temp-file)
+    (goto-char current-point)))
+
+
+(defun ruff-fix-before-save ()
+  (interactive)
+  (when (memq major-mode '(python-mode python-ts-mode))
+    (ruff-fix-buffer)))
+
+(add-hook 'before-save-hook 'ruff-fix-before-save)
