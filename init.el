@@ -1,24 +1,15 @@
 ;; fix python-mode bug
 (setq elpy-shell-echo-output nil)
 
+;; use shell setup
 ;; frame
 (defvar efs/frame-transparency '(90 . 90))
-(set-face-attribute 'default nil :font "Source Code Pro-14")
+(set-face-attribute 'default nil :font "Source Code Pro-12")
 
-;; mela package repo
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+;; hide top bar
+(add-to-list 'default-frame-alist '(undecorated . t))
 
-;; read zsh config
-;; (setq exec-path-from-shell-arguments '("-l"))
-(setq exec-path-from-shell-shell-name "/bin/zsh")
-(setq exec-path-from-shell-debug t)
-
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-
-;; straight
+;; straight.el bootstrap (primary package manager)
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -32,11 +23,37 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(quelpa
- '(quelpa-use-package
-   :fetcher git
-   :url "https://github.com/quelpa/quelpa-use-package.git"))
-(require 'quelpa-use-package)
+;; Use straight.el with use-package
+(straight-use-package 'use-package)
+;; Don't use straight by default - we'll specify :straight t when needed
+(setq straight-use-package-by-default nil)
+
+;; Keep package.el for compatibility (but don't use it for installation)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(package-initialize)
+
+;; Function to clone git repos if they don't exist
+(defun ensure-git-repo (repo-url local-path)
+  "Clone git repo if it doesn't exist locally."
+  (let ((full-path (expand-file-name local-path)))
+    (unless (file-directory-p full-path)
+      (message "Cloning %s to %s..." repo-url full-path)
+      (shell-command (format "git clone %s %s" repo-url full-path)))))
+
+;; Ensure git repos are cloned
+(ensure-git-repo "https://github.com/manateelazycat/auto-save.git"
+                 "~/ghq/github.com/manateelazycat/auto-save")
+(ensure-git-repo "https://github.com/tonyaldon/org-bars.git"
+                 "~/ghq/github.com/tonyaldon/org-bars")
+
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
 
 ;; solve mac ls option problems
 (setq insert-directory-program "/opt/homebrew/bin/gls" dired-use-ls-dired t)
@@ -48,7 +65,6 @@
 (tool-bar-mode -1)          ; Disable the toolbar
 (tooltip-mode -1)           ; Disable tooltips
 (menu-bar-mode -1)
-(scroll-bar-mode -1)
 
 ;; Set frame transparency
 (set-frame-parameter (selected-frame) 'alpha efs/frame-transparency)
@@ -59,7 +75,7 @@
 
 ;; search using swiper
 ;; ref: https://dr-knz.net/a-tour-of-emacs-as-go-editor.html
-(require 'swiper)
+(require 'swiper nil t)
 (global-set-key "\C-s" 'swiper)
 (global-set-key "\C-r" 'swiper-backward)
 
@@ -69,9 +85,9 @@
 ;; auto refresh buffer
 (global-auto-revert-mode t)
 
-
 ;; setup evil
 (use-package evil
+  :straight t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -92,6 +108,7 @@
 
 ;; evil collection
 (use-package evil-collection
+  :straight t
   :after evil
   :config
   (evil-collection-init))
@@ -104,16 +121,15 @@
   :custom ((dired-listing-switches "-al --group-directories-first"))
   :config
   (evil-collection-define-key 'normal 'dired-mode-map
-			      "h" 'dired-up-directory
-			      "l" 'dired-find-file))
+    "h" 'dired-up-directory
+    "l" 'dired-find-file))
 (use-package vertico
-  :ensure t
+  :straight t
   :bind (:map vertico-map
 	      ("C-j" . vertico-next)
 	      ("C-k" . vertico-previous)
 	      ("C-f" . vertico-exit)
 	      )
-
   :custom
   (vertico-cycle t)
   :init
@@ -121,6 +137,7 @@
 
 ;; ivy completion
 (use-package ivy
+  :straight t
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -139,11 +156,13 @@
   (ivy-mode 1))
 
 (use-package ivy-rich
+  :straight t
   :after ivy
   :init
   (ivy-rich-mode 1))
 
 (use-package counsel
+  :straight t
   :bind (("C-M-j" . 'counsel-switch-buffer)
          :map minibuffer-local-map
          ("C-r" . 'counsel-minibuffer-history))
@@ -151,9 +170,6 @@
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
-
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/thing-edit")
-(require 'thing-edit)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -163,27 +179,59 @@
  '(acm-backend-codeium-api-key "c7d24326-3dd7-41c8-9818-9400bf71304d")
  '(custom-enabled-themes '(sanityinc-tomorrow-eighties))
  '(custom-safe-themes
-   '("d1b46cf4414713c0901c3d77b640d857614b220e56c23f00c2fcfe5a2406b05a" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" "cd51c4e5a258ab9fd82de1fb4c0eee54326de5e307e3bf2895467ae103bc562b" "65c29375a6215a070bbc41af0a2dd4d3b2bf462b32e95d7fe4d8c86052ab0b9d" "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28" "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default))
+   '("01f347a923dd21661412d4c5a7c7655bf17fb311b57ddbdbd6fce87bd7e58de6"
+     "7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf"
+     "40352d95bc42c2e3acb7fc75afb3029d81a76897e14e9438857729cc87630980"
+     "97283a649cf1ffd7be84dde08b45a41faa2a77c34a4832d3884c7f7bba53f3f5"
+     "0279c1b81b569e46a4ee8e87e5e381568bf931257287191fd091f2948f7e2e8e"
+     "daf189a2af425e9f376ddb9e99627e9d8f2ebdd5cc795065da81633f88389b4b"
+     "9ddb83c12595e789e9abd04a5c0705661748776223a794a6f64669352b956e79"
+     "d0dc7861b33d68caa92287d39cf8e8d9bc3764ec9c76bdb8072e87d90546c8a3"
+     "4f03e70554a58349740973c69e73aefd8ce761a77b22a9dc52a19e708532084a"
+     "fb7595c9571f2bd41635745d12551f35322296b70330056ddd0020ab2374671c"
+     "c3e62e14eb625e02e5aeb03d315180d5bb6627785e48f23ba35eb7b974a940af"
+     "144aa208033b570b4c31e054b77afa01b9e2349cdba14bb17c3e484c82effa30"
+     "a087e01778a85f8381b2aa2b7b0832951aea078621b38844b6c8c8d638d73e3b"
+     "b93039071f490613499b76c237c2624ae67a9aafbc717da9b4d81f456344e56e"
+     "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8"
+     "cd51c4e5a258ab9fd82de1fb4c0eee54326de5e307e3bf2895467ae103bc562b"
+     "65c29375a6215a070bbc41af0a2dd4d3b2bf462b32e95d7fe4d8c86052ab0b9d"
+     "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f"
+     "b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28"
+     "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d"
+     "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088"
+     default))
  '(elfeed-feeds
-   '("https://www.fatbobman.com/feed.rss" "https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml" "https://feeds.feedburner.com/lzyy" "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml" "https://oleb.net/blog/atom.xml" "https://www.appcoda.com/navigationstack/" "feed://developer.apple.com/news/rss/news.rss" "https://developer.apple.com/news/" "https://pofat.substack.com/" "https://www.avanderlee.com/" "https://sarunw.com/" "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
+   '("https://us1.campaign-archive.com/feed?u=faa8eb4ef3a111cef92c4f3d4&id=e505c88a2e"
+     "https://cprss.s3.amazonaws.com/javascriptweekly.com.xml"
+     "http://www.alloyteam.com/feed/"
+     "https://www.fatbobman.com/feed.rss"
+     "https://onevcat.com/feed.xml" "https://catcoding.me/atom.xml"
+     "https://feeds.feedburner.com/lzyy"
+     "https://raw.githubusercontent.com/RSS-Renaissance/awesome-blogCN-feeds/master/feedlist.opml"
+     "https://oleb.net/blog/atom.xml"
+     "https://www.appcoda.com/navigationstack/"
+     "feed://developer.apple.com/news/rss/news.rss"
+     "https://developer.apple.com/news/" "https://pofat.substack.com/"
+     "https://www.avanderlee.com/" "https://sarunw.com/"
+     "https://github.com/SwiftOldDriver/iOS-Weekly/releases.atom"))
  '(org-agenda-files
-   '("~/Library/Mobile Documents/com~apple~CloudDocs/org-roam/20231219131733-task_yokoyan.org" "/Users/gaohang/gtd/inbox.org" "/Users/gaohang/gtd/gtd.org" "/Users/gaohang/gtd/done.org" "/Users/gaohang/gtd/tickler.org"))
+   '("/Users/hanggao/org/inbox.org" "/Users/hanggao/org/journal.org") nil nil "Customized with use-package org")
  '(package-selected-packages
-   '(ace-window sis flycheck projectile tide company-tabnine obsidian zenburn-theme enh-ruby-mode go-mode quelpa corfu-terminal corfu typescript-mode doom-modeline doom-themes ivy-rich counsel evil-collection yasnippet yaml-mode vertico use-package swiper no-littering exec-path-from-shell evil))
- '(package-vc-selected-packages
-   '((eglot-booster :vc-backend Git :url "https://github.com/jdtsmith/eglot-booster"))))
-
-;; setup for coding
-;;; python
-(use-package python-mode)
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+   '(ace-window sis flycheck projectile tide company-tabnine obsidian
+		zenburn-theme enh-ruby-mode go-mode quelpa
+		corfu-terminal corfu typescript-mode doom-modeline
+		doom-themes ivy-rich counsel evil-collection yasnippet
+		yaml-mode vertico use-package swiper no-littering
+		exec-path-from-shell evil)))
 
 ;; move between window
-(use-package ace-window)
+(use-package ace-window
+  :straight t)
 (global-set-key (kbd "M-o") 'ace-window)
 
 (use-package projectile
-  :ensure t
+  :straight t
   :diminish
   :custom
   (projectile-switch-project-action 'projectile-dired)
@@ -197,170 +245,16 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :bind (:map projectile-command-map
-              ("w" . projectile-ripgrep)))
-
+	      ("w" . projectile-ripgrep)))
 
 (use-package powerline
+  :straight t
   :defer t
   :config
   (setq powerline-height 23
         powerline-default-separator (if (display-graphic-p) 'arrow 'utf-8)))
 
-(use-package spaceline
-  :defer t
-  :init
-  (add-hook 'after-init-hook (lambda () (require 'spaceline)))
-  :config
-  ;; To get the mode-line highlight to change color depending on the evil state
-  (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-
-  (use-package spaceline-segments
-    :ensure nil
-    :config
-    (setq spaceline-window-numbers-unicode t
-          spaceline-minor-modes-separator ""
-          spaceline-workspace-numbers-unicode t)
-    ;;define version control segment
-    (spaceline-define-segment version-control
-                              "Version control information."
-                              (when vc-mode
-                                (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
-                                  (powerline-raw (concat (kevin/maybe-alltheicon "git" :face 'warning :v-adjust -0.05)
-                                                         " "
-                                                         branch)))))
-    ;;define major mode segment
-    (spaceline-define-segment major-mode
-                              "Return simplifyed major mode name."
-                              (let* ((major-name (format-mode-line "%m"))
-                                     (replace-table '(
-                                                      Emacs-Lisp "Elisp"
-                                                      Shell-script ""
-                                                      Python ""
-                                                      Go ""
-                                                      C++//l "C++"
-                                                      Protocol-Buffers//l "PB"
-                                                      Fundamental ""))
-                                     (replace-name (plist-get replace-table (intern major-name))))
-                                (if replace-name
-                                    replace-name major-name)))
-    ;; define buffer id segment
-    (spaceline-define-segment buffer-id
-                              "Shorten buufer fileanme."
-                              (when (buffer-file-name)
-                                (concat
-                                 (kevin/maybe-faicon-icon "floppy-o" :face 'warning :v-adjust -0.05)
-                                 " "
-                                 (shorten-directory default-directory 6)
-                                 (file-relative-name buffer-file-name)))))
-
-  (use-package spaceline-config
-    :ensure nil
-    :config
-    (spaceline-toggle-persp-name-on)
-    (spaceline-toggle-workspace-number-on)
-    (spaceline-toggle-window-number-on)
-    (spaceline-toggle-buffer-size-off)
-    (spaceline-toggle-remote-host-off)
-    (spaceline-toggle-flycheck-info-off)
-    (spaceline-toggle-selection-info-on)
-    (spaceline-toggle-input-method-on)
-    (spaceline-toggle-buffer-encoding-abbrev-on)
-    (spaceline-toggle-nyan-cat-on)
-    ;; hide the current position in the buffer as a percentage
-    (spaceline-toggle-buffer-position-off)
-    ;; shows the currently visible part of the buffer.
-    (spaceline-toggle-hud-off)
-    (spaceline-toggle-major-mode-on)
-    ;; configure the separator between the minor modes
-    (unless (display-graphic-p)
-      (spaceline-toggle-minor-modes-off))
-    ;; custom spaceline theme
-    (spaceline-compile
-     ;; define spaceline theme name: spaceline-ml-custom
-     "custom"
-     ;; left side
-     '(((((persp-name :fallback workspace-number) window-number) :separator "")
-        :fallback evil-state
-        :face highlight-face
-        :priority 100)
-       (anzu :priority 95)
-       ((buffer-id) :priority 98)
-       (process :when active)
-       ((flycheck-error flycheck-warning flycheck-info) :when active :priority 99)
-       (version-control :when active :priority 97)
-       (org-pomodoro :when active)
-       (org-clock :when active)
-       (nyan-cat :when active :priority 70)
-       (major-mode :when active :priority 79)
-       (minor-modes :when active :priority 78))
-     ;; right side
-     '((purpose :priority 94)
-       (selection-info :priority 95)
-       input-method
-       ((buffer-encoding-abbrev line-column) :separator "|" :priority 96)
-       (global :when active)
-       (hud :priority 99)))
-    (setq-default mode-line-format '("%e" (:eval (spaceline-ml-custom))))))
-
-
 (provide 'init-modeline)
-;;; init-modeline ends here
-
-;; awesome-pair 括号补全
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/awesome-pair") ; add awesome-pair to your load-path
-
-(require 'awesome-pair)
-(dolist (hook (list
-               'c-mode-common-hook
-               'c-mode-hook
-               'c++-mode-hook
-               'java-mode-hook
-               'haskell-mode-hook
-               'emacs-lisp-mode-hook
-               'lisp-interaction-mode-hook
-               'lisp-mode-hook
-               'maxima-mode-hook
-               'ielm-mode-hook
-               'sh-mode-hook
-               'makefile-gmake-mode-hook
-               'php-mode-hook
-               'python-mode-hook
-               'js-mode-hook
-               'go-mode-hook
-               'qml-mode-hook
-               'jade-mode-hook
-               'css-mode-hook
-               'ruby-mode-hook
-               'coffee-mode-hook
-               'rust-mode-hook
-               'qmake-mode-hook
-               'lua-mode-hook
-               'swift-mode-hook
-               'minibuffer-inactive-mode-hook
-               ))
-  (add-hook hook '(lambda () (awesome-pair-mode 1))))
-(define-key awesome-pair-mode-map (kbd "(") 'awesome-pair-open-round)
-(define-key awesome-pair-mode-map (kbd "[") 'awesome-pair-open-bracket)
-(define-key awesome-pair-mode-map (kbd "{") 'awesome-pair-open-curly)
-(define-key awesome-pair-mode-map (kbd ")") 'awesome-pair-close-round)
-(define-key awesome-pair-mode-map (kbd "]") 'awesome-pair-close-bracket)
-(define-key awesome-pair-mode-map (kbd "}") 'awesome-pair-close-curly)
-(define-key awesome-pair-mode-map (kbd "=") 'awesome-pair-equal)
-
-(define-key awesome-pair-mode-map (kbd "%") 'awesome-pair-match-paren)
-(define-key awesome-pair-mode-map (kbd "\"") 'awesome-pair-double-quote)
-
-(define-key awesome-pair-mode-map (kbd "SPC") 'awesome-pair-space)
-(define-key awesome-pair-mode-map (kbd "RET") 'awesome-pair-newline)
-
-(use-package org-ql
-  :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
-            :files (:defaults (:exclude "helm-org-ql.el"))))
-
-;; Choose some fonts
-;;(set-face-attribute 'default nil :family "Iosevka")
-;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
-;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
 
 ;; Add frame borders and window dividers
 (modify-all-frames-parameters
@@ -379,9 +273,9 @@
 
 ;; org-roam configuration
 (use-package org-roam
-  :ensure t
+  :straight t
   :custom
-  (org-roam-directory (file-truename "/Users/gaohang/Library/Mobile Documents/com~apple~CloudDocs/org-roam/"))
+  (org-roam-directory (file-truename "~/org-roam/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
@@ -396,44 +290,22 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
-;; copilot
-(use-package copilot
-  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :ensure t)
-;;; enable copilot on programming mode
-(add-hook 'prog-mode-hook 'copilot-mode)
-
-;;; bind completion key
-(define-key copilot-completion-map (kbd "<backtab>") 'copilot-accept-completion)
-(require 'org)
-
-;; org-ai setup
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/rksm/org-ai")
-(require 'org-ai)
-(add-hook 'org-mode-hook #'org-ai-mode)
-(org-ai-global-mode)
-(setq org-ai-default-chat-model "gpt-4o") ; if you are on the gpt-4 beta:
-(org-ai-install-yasnippets) ; if you are using yasnippet and want `ai` snippets
-
 ;; org-mode 换行问题
 (add-hook 'org-mode-hook 'visual-line-mode)
 
-;; pangu-spacing
-;;; https://github.com/coldnew/pangu-spacing
-(require 'pangu-spacing)
-(global-pangu-spacing-mode 1)
-(setq pangu-spacing-real-insert-separtor t)
-
 ;; nerd-icons
-(require 'nerd-icons)
-(use-package treemacs-nerd-icons
-  :config
-  (treemacs-load-theme "nerd-icons"))
-(require 'nerd-icons-dired)
-(add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
+(when (require 'nerd-icons nil t)
+  (use-package treemacs-nerd-icons
+    :straight t
+    :config
+    (treemacs-load-theme "nerd-icons"))
+
+  (when (require 'nerd-icons-dired nil t)
+    (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)))
 
 ;; yasnippet
 (use-package yasnippet
+  :straight t
   :diminish yas-minor-mode
   :hook ((prog-mode org-mode) . yas-minor-mode)
   :bind (("C-c y i" . yas-insert-snippet)
@@ -451,13 +323,13 @@
   (yas-reload-all))
 
 (use-package yasnippet-snippets
+  :straight t
   :defer t
   :after yasnippet)
 
-
 ;; autoformat
 (use-package apheleia
-  :straight (apheleia :host github :repo "raxod502/apheleia")
+  :straight t
   :config
   (setf (alist-get 'prettier apheleia-formatters)
         '(npx "prettier"
@@ -471,53 +343,19 @@
   (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
   )
 
-;; rime
-(use-package rime
-  :custom
-  (rime-librime-root "~/.emacs.d/librime/dist")
-  (rime-emacs-module-header-root "/Applications/Emacs.app/Contents/Resources/include/")
-  (default-input-method "rime"))
-
-(setq rime-translate-keybindings
-  '("C-f" "C-b" "C-n" "C-p" "C-g" "<left>" "<right>" "<up>" "<down>" "<prior>" "<next>" "<delete>"))
-
-(setq rime-user-data-dir "~/rime-config/")
-
-(setq rime-disable-predicates
-      '(rime-predicate-evil-mode-p
-        rime-predicate-after-alphabet-char-p
-        rime-predicate-prog-in-code-p))
-
-(setq rime-posframe-properties (list :internal-border-width 1
-                                          :font "Source Code Pro-14"))
-
-(setq word-wrap-by-category t)
-(setq default-input-method "rime"
-      rime-show-candidate 'posframe)
-
-
-(setq doom-modeline-support-imenu t)
-;; doom-modeline
-(require 'doom-modeline)
-(doom-modeline-mode 1)
-(setq doom-modeline-project-detection 'auto)
-(setq doom-modeline-icon t)
-(setq doom-modeline-major-mode-color-icon t)
-(setq doom-modeline-buffer-state-icon t)
-
 ;; auto-save
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
-(require 'auto-save)
-(auto-save-enable)
+(add-to-list 'load-path "~/ghq/github.com/manateelazycat/auto-save") ; add auto-save to your load-path
+(when (require 'auto-save nil t)
+  (auto-save-enable))
 
 (setq auto-save-silent t)   ; quietly save (setq auto-save-delete-trailing-whitespace t)  ; automatically delete spaces at the end of the line when saving
 ;;; custom predicates if you don't want auto save.
 ;;; disable auto save mode when current filetype is an gpg file.
 (setq auto-save-disable-predicates
       '((lambda ()
-      (string-suffix-p
-      "gpg"
-      (file-name-extension (buffer-name)) t))))
+	  (string-suffix-p
+	   "gpg"
+	   (file-name-extension (buffer-name)) t))))
 
 (defun nerd-icon-for-tags (tags)
   "Generate Nerd Font icon based on tags.
@@ -529,43 +367,21 @@
         (t (nerd-icons-faicon "nf-fae-feedly" :face '(:foreground "#2AB24C")))))
 
 
-(defun dss/-org-ai-after-chat-insertion-hook (type _text)
-  (when (and (eq type 'end) (eq major-mode 'org-mode) (memq 'org-indent-mode minor-mode-list))
-    (org-indent-indent-buffer)))
-(add-hook 'org-ai-after-chat-insertion-hook #'dss/-org-ai-after-chat-insertion-hook)
-
-(org-ql-search (org-agenda-files)
-  '(ts :from -7 :to today)
-  :title "Recent Items"
-  :sort '(todo priority date)
-  :super-groups '((:auto-ts t)))
-
-;; complete the block
-(bind-key (kbd "C-c a c") 'org-ai-complete-block)
-
 ;; setup auth-sources
 (setq auth-sources
-    '((:source "~/authinfo.gpg")))
+      '((:source "~/authinfo.gpg")))
 
 ;; org-mode style
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/tonyaldon/org-bars")
-(require 'org-bars)
-(add-hook 'org-mode-hook 'org-bars-mode)
-
-(setq org-startup-indented t)    ;; 見出しをインデント
-(setq org-indent-mode-turns-on-hiding-stars nil)  ;; 見出しをインデントした時にアスタリスクが減るのを防ぐ
-(setq org-indent-indentation-per-level 4)  ;; インデントの幅を設定
-(setq org-startup-folded 'content)  ;; 見出しの初期状態（見出しだけ表示）
-(setq org-stratup-with-inline-images t)  ;; インライン画像を表示
+(add-to-list 'load-path "~/ghq/github.com/tonyaldon/org-bars")
+(when (require 'org-bars nil t)
+  (add-hook 'org-mode-hook 'org-bars-mode))
 
 ;; org-download
-(require 'org-download)
-(add-hook 'dired-mode-hook 'org-download-enable)
-
-;; Minimal UI
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+(when (require 'org-download nil t)
+  (add-hook 'dired-mode-hook 'org-download-enable))
+(setq org-download-method 'directory) ; Save images in a directory
+(setq org-download-image-dir "~/org/images") ; Directory relative to the Org file
+(setq org-download-image-org-width 600)
 
 ;; Add frame borders and window dividers
 (modify-all-frames-parameters
@@ -579,9 +395,9 @@
 (set-face-background 'fringe (face-attribute 'default :background))
 
 ;; setup python interpreter
-  (setq python-shell-interpreter "jupyter"
-        python-shell-interpreter-args "console --simple-prompt"
-        python-shell-prompt-detect-failure-warning nil)
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console --simple-prompt"
+      python-shell-prompt-detect-failure-warning nil)
 
 
 ;; setup ibuffer
@@ -614,49 +430,6 @@
 ;;         comment-tags-lighter nil))
 ;; (add-hook 'prog-mode-hook 'comment-tags-mode)
 
-;; super agenda
-(let ((org-super-agenda-groups
-       '(;; Each group has an implicit boolean OR operator between its selectors.
-         (:name "Today"  ; Optionally specify section name
-                :time-grid t  ; Items that appear on the time grid
-                :todo "TODAY")  ; Items that have this TODO keyword
-         (:name "Important"
-                ;; Single arguments given alone
-                :tag "bills"
-                :priority "A")
-         ;; Set order of multiple groups at once
-         (:order-multi (2 (:name "Shopping in town"
-                                 ;; Boolean AND group matches items that match all subgroups
-                                 :and (:tag "shopping" :tag "@town"))
-                          (:name "Food-related"
-                                 ;; Multiple args given in list with implicit OR
-                                 :tag ("food" "dinner"))
-                          (:name "Personal"
-                                 :habit t
-                                 :tag "personal")
-                          (:name "Space-related (non-moon-or-planet-related)"
-                                 ;; Regexps match case-insensitively on the entire entry
-                                 :and (:regexp ("space" "NASA")
-                                               ;; Boolean NOT also has implicit OR between selectors
-                                               :not (:regexp "moon" :tag "planet")))))
-         ;; Groups supply their own section names when none are given
-         (:todo "WAITING" :order 8)  ; Set order of this section
-         (:todo ("SOMEDAY" "TO-READ" "CHECK" "TO-WATCH" "WATCHING")
-                ;; Show this group at the end of the agenda (since it has the
-                ;; highest number). If you specified this group last, items
-                ;; with these todo keywords that e.g. have priority A would be
-                ;; displayed in that group instead, because items are grouped
-                ;; out in the order the groups are listed.
-                :order 9)
-         (:priority<= "B"
-                      ;; Show this section after "Today" and "Important", because
-                      ;; their order is unspecified, defaulting to 0. Sections
-                      ;; are displayed lowest-number-first.
-                      :order 1)
-         ;; After the last group, the agenda will display items that didn't
-         ;; match any of these groups, with the default order position of 99
-         )))
-  (org-agenda nil "a"))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -665,127 +438,102 @@
    ))
 
 
-;; setup org-mode
-;; Must do this so the agenda knows where to look for my files
-(setq org-agenda-files '("~/org"))
+;; Enhanced org-mode setup
+(use-package org
+  :ensure nil
+  :hook ((org-mode . org-indent-mode)
+         (org-mode . visual-line-mode))
+  :custom
+  ;; Basic org settings
+  (org-directory "~/org")
+  (org-agenda-files '("~/org" "~/org/roam"))
+  (org-startup-folded 'content)
+  (org-startup-indented t)
+  (org-hide-emphasis-markers t)
+  (org-return-follows-link t)
+  (org-log-done 'time)
+  (org-log-into-drawer t)
 
-;; When a TODO is set to a done state, record a timestamp
-(setq org-log-done 'time)
+  ;; Agenda settings
+  (org-agenda-span 'week)
+  (org-agenda-start-day nil)
+  (org-agenda-start-on-weekday nil)
+  (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-skip-deadline-if-done t)
+  (org-agenda-include-deadlines t)
+  (org-agenda-block-separator ?─)
+  (org-agenda-compact-blocks t)
+  (org-agenda-start-with-log-mode t)
 
-;; Follow the links
-(setq org-return-follows-link  t)
+  ;; Refile settings
+  (org-refile-targets '((org-agenda-files :maxlevel . 3)))
+  (org-refile-use-outline-path 'file)
+  (org-outline-path-complete-in-steps nil)
+  (org-refile-allow-creating-parent-nodes 'confirm)
 
-;; Associate all org files with org mode
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+  ;; Clock settings
+  (org-clock-persist 'history)
+  (org-clock-in-resume t)
+  (org-clock-persist-query-resume nil)
+  (org-clock-report-include-clocking-task t)
+  (org-clock-out-remove-zero-time-clocks t)
 
-;; Make the indentation look nicer
-(add-hook 'org-mode-hook 'org-indent-mode)
+  ;; Archive settings
+  (org-archive-location "~/org/archive/%s_archive::")
 
-;; Remap the change priority keys to use the UP or DOWN key
-(define-key org-mode-map (kbd "C-c <up>") 'org-priority-up)
-(define-key org-mode-map (kbd "C-c <down>") 'org-priority-down)
+  :bind (("C-c l" . org-store-link)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-c b" . org-switchb)
+         :map org-mode-map
+         ("C-c C-q" . counsel-org-tag)
+         ("C-c <up>" . org-priority-up)
+         ("C-c <down>" . org-priority-down))
 
-;; Shortcuts for storing links, viewing the agenda, and starting a capture
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(define-key global-map "\C-cc" 'org-capture)
+  :config
+  (org-clock-persistence-insinuate)
 
-;; When you want to change the level of an org item, use SMR
-(define-key org-mode-map (kbd "C-c C-g C-r") 'org-shiftmetaright)
+  ;; Better agenda views
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))
+            (tags-todo "agenda/ACTIVE"
+                       ((org-agenda-overriding-header "Active Projects")))))
 
-;; Hide the markers so you just see bold text as BOLD-TEXT and not *BOLD-TEXT*
-(setq org-hide-emphasis-markers t)
+          ("n" "Next Tasks"
+           ((todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))))
 
-;; Wrap the lines in org mode so that things are easier to read
-(add-hook 'org-mode-hook 'visual-line-mode)
+          ("w" "Work Tasks" tags-todo "+work")
+          ("p" "Personal Tasks" tags-todo "+personal")
+          ("r" "Review"
+           ((stuck "")
+            (todo "WAITING"))))))
 
-(setq org-capture-templates
-      '(
-	("j" "Work Log Entry"
-         entry (file+datetree "~/org/work-log.org")
-         "* %?"
-         :empty-lines 0)
-        ("n" "Note"
-         entry (file+headline "~/org/notes.org" "Random Notes")
-         "** %?"
-         :empty-lines 0)
 
-        ("d" "Door Codes"
-         entry (file+headline "~/org/notes.org" "Door Codes")
-         "** %?"
-         :empty-lines 0)
-        ("g" "General To-Do"
-         entry (file+headline "~/org/todos.org" "General Tasks")
-         "* TODO [#B] %?\n:Created: %T\n "
-         :empty-lines 0)
-        ("c" "Code To-Do"
-         entry (file+headline "~/org/todos.org" "Code Related Tasks")
-         "* TODO [#B] %?\n:Created: %T\n%i\n%a\nProposed Solution: "
-         :empty-lines 0)
-        )
-      )
-
+;; Enhanced TODO keywords
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "PLANNING(p)" "IN-PROGRESS(i@/!)" "VERIFYING(v!)" "BLOCKED(b@)"  "|" "DONE(d!)" "OBE(o@!)" "WONT-DO(w@/!)" )
-        ))
+      '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "WAITING(w@/!)" "SOMEDAY(s)" "|" "DONE(d!)" "CANCELLED(c@/!)")
+        (sequence "IDEA(i)" "PLANNING(P)" "IN-PROGRESS(@/!)" "VERIFYING(v!)" "BLOCKED(b@)" "|" "DONE(d!)" "OBE(o@!)" "WONT-DO(w@/!)")))
 
 
 (setq org-todo-keyword-faces
-      '(
-        ("TODO" . (:foreground "GoldenRod" :weight bold))
+      '(("TODO" . (:foreground "#7c7c75" :weight bold))
+        ("NEXT" . (:foreground "#0098dd" :weight bold))
+        ("PROJ" . (:foreground "#708090" :weight bold))
+        ("WAITING" . (:foreground "#9f7efe" :weight bold))
+        ("SOMEDAY" . (:foreground "#d0bf8f" :weight bold))
+        ("IDEA" . (:foreground "#ff6347" :weight bold))
         ("PLANNING" . (:foreground "DeepPink" :weight bold))
         ("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
         ("VERIFYING" . (:foreground "DarkOrange" :weight bold))
         ("BLOCKED" . (:foreground "Red" :weight bold))
         ("DONE" . (:foreground "LimeGreen" :weight bold))
+        ("CANCELLED" . (:foreground "gray" :weight bold))
         ("OBE" . (:foreground "LimeGreen" :weight bold))
-        ("WONT-DO" . (:foreground "LimeGreen" :weight bold))
-        ))
-
-
-;; Tags
-(setq org-tag-alist '(
-                      ;; Ticket types
-                      (:startgroup . nil)
-                      ("@bug" . ?b)
-                      ("@feature" . ?u)
-                      ("@spike" . ?j)
-                      (:endgroup . nil)
-
-                      ;; Ticket flags
-                      ("@write_future_ticket" . ?w)
-                      ("@emergency" . ?e)
-                      ("@research" . ?r)
-
-                      ;; Meeting types
-                      (:startgroup . nil)
-                      ("big_sprint_review" . ?i)
-                      ("cents_sprint_retro" . ?n)
-                      ("dsu" . ?d)
-                      ("grooming" . ?g)
-                      ("sprint_retro" . ?s)
-                      (:endgroup . nil)
-
-                      ;; Code TODOs tags
-                      ("QA" . ?q)
-                      ("backend" . ?k)
-                      ("broken_code" . ?c)
-                      ("frontend" . ?f)
-
-                      ;; Special tags
-                      ("CRITICAL" . ?x)
-                      ("obstacle" . ?o)
-
-                      ;; Meeting tags
-                      ("HR" . ?h)
-                      ("general" . ?l)
-                      ("meeting" . ?m)
-                      ("misc" . ?z)
-                      ("planning" . ?p)
-
-                      ;; Work Log Tags
-                      ("accomplishment" . ?a)
-                      ))
+        ("WONT-DO" . (:foreground "LimeGreen" :weight bold))))
 
 
 (setq org-tag-faces
@@ -798,186 +546,361 @@
         ("CRITICAL"  . (:foreground "red1"          :weight bold))
         )
       )
+(setq org-modern-star '("◉" "○" "◈" "◇" "*"))
 
-(use-package tree-sitter
-  :ensure t
+;; org-super-agenda for better agenda grouping
+(use-package org-super-agenda
+  :straight t
+  :after org
   :config
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (org-super-agenda-mode)
+  (setq org-super-agenda-groups
+        '(;; Each group has an implicit boolean OR operator between its selectors.
+          (:name "🔥 Overdue"
+                 :deadline past
+                 :order 0)
+          (:name "📅 Today"
+                 :time-grid t
+                 :todo "TODAY"
+                 :scheduled today
+                 :deadline today
+                 :order 1)
+          (:name "⚡ Next Tasks"
+                 :todo "NEXT"
+                 :order 2)
+          (:name "🏢 Work"
+                 :and (:tag "work" :not (:todo "SOMEDAY"))
+                 :order 3)
+          (:name "🏠 Personal"
+                 :and (:tag "personal" :not (:todo "SOMEDAY"))
+                 :order 4)
+          (:name "📚 Learning"
+                 :tag "learning"
+                 :order 5)
+          (:name "⏰ Waiting"
+                 :todo "WAITING"
+                 :order 6)
+          (:name "💡 Ideas"
+                 :todo "IDEA"
+                 :order 7)
+          (:name "📋 Projects"
+                 :todo "PROJ"
+                 :order 8)
+          (:name "🔮 Someday"
+                 :todo "SOMEDAY"
+                 :order 9))))
 
-(use-package tree-sitter-langs
-  :ensure t)
-
-(use-package ivy-posframe
-  :ensure t
+;; org-ql for powerful querying
+(use-package org-ql
+  :straight t
+  :after org
+  :bind (("C-c o q" . org-ql-search)
+         ("C-c o v" . org-ql-view)
+         ("C-c o s" . org-ql-sparse-tree))
   :config
-  ;; 将 Ivy 的所有命令都使用 posframe 显示
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
-  (ivy-posframe-mode 1))
+  ;; Some useful org-ql views
+  (setq org-ql-views
+        '(("Overview" :buffers-files org-agenda-files
+           :query (and (todo)
+                      (not (tags "archive")))
+           :sort (date priority todo)
+           :super-groups ((:name "Critical" :priority "A")
+                         (:name "Important" :priority "B")
+                         (:auto-category t)))
 
-(use-package discover-my-major
-  :bind ("C-h C-m" . discover-my-major))
+          ("Next Actions" :buffers-files org-agenda-files
+           :query (todo "NEXT")
+           :sort (priority deadline scheduled date)
+           :super-groups ((:auto-tags t)))
 
-;; lsp-bridge setup
-(add-to-list 'load-path "/Users/gaohang/ghq/github.com/manateelazycat/lsp-bridge")
+          ("Stuck Projects" :buffers-files org-agenda-files
+           :query (and (todo "PROJ")
+                      (not (children (todo))))
+           :sort date
+           :super-groups ((:auto-tags t)))
 
-(require 'yasnippet)
-(yas-global-mode 1)
+          ("Waiting For" :buffers-files org-agenda-files
+           :query (todo "WAITING")
+           :sort date
+           :super-groups ((:auto-tags t)))
 
+          ("This Week" :buffers-files org-agenda-files
+           :query (or (scheduled :from -7 :to 7)
+                     (deadline :from -7 :to 7))
+           :sort (scheduled deadline)
+           :super-groups ((:name "Overdue" :scheduled past :deadline past)
+                         (:name "Today" :scheduled today :deadline today)
+                         (:auto-date t))))))
 
-;; eglot setup
-(use-package eglot-booster
-	:after eglot
-	:config	(eglot-booster-mode))
-
-(add-hook 'sh-mode-hook 'eglot-ensure)
-(add-hook 'go-mode-hook 'eglot-ensure)
-(add-hook 'emacs-lisp-mode-hook 'eglot-ensure)
-(add-hook 'protobuf-mode-hook 'eglot-ensure)
-
-;; theme
-(load-theme 'ef-elea-dark)
-
-;; Eglot 配置
-(use-package eglot
-  :hook ((python-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         (sh-mode . eglot-ensure)
-	 (protobuf-mode-hook . eglot-ensure)
-	 (go-mode . eglot-ensure)
-         (emacs-lisp-mode . eglot-ensure))
+;; Calendar view with calfw
+(use-package calfw
+  :straight t
+  :bind ("C-c o c" . cfw:open-org-calendar)
   :config
-  (setq eglot-sync-connect 1
-        eglot-connect-timeout 10
-        eglot-autoshutdown t
-        eglot-send-changes-idle-time 0.5
-        eglot-events-buffer-size 0)
-  :bind (:map eglot-mode-map
-              ("C-c a" . eglot-code-actions)
-              ("C-c r" . eglot-rename)
-              ("C-c o" . eglot-code-action-organize-imports)))
+  (setq cfw:display-calendar-holidays nil))
 
-;; Xref 配置
-(use-package xref
-  :bind (("M-." . xref-find-definitions)
-         ("M-?" . xref-find-references)))
+(use-package calfw-org
+  :straight t
+  :after (calfw org))
 
-;; Corfu 配置
-(use-package corfu
+;; Habit tracking
+(with-eval-after-load 'org
+  (add-to-list 'org-modules 'org-habit)
+  (require 'org-habit)
+  (setq org-habit-graph-column 60
+        org-habit-preceding-days 21
+        org-habit-following-days 7
+        org-habit-show-habits-only-for-today t))
+
+;; Clock reporting and time tracking improvements
+(use-package org-clock-today
+  :straight t
+  :after org
+  :config
+  (setq org-clock-today-hide-default-org-clock-mode-line t))
+
+;; Quick capture improvements
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/org/inbox.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")
+        ("T" "Todo with deadline" entry (file+headline "~/org/inbox.org" "Tasks")
+         "* TODO %?\n  DEADLINE: %^{Deadline}t\n  %i\n  %a")
+        ("s" "Scheduled todo" entry (file+headline "~/org/inbox.org" "Tasks")
+         "* TODO %?\n  SCHEDULED: %^{Schedule}t\n  %i\n  %a")
+        ("n" "Next Action" entry (file+headline "~/org/inbox.org" "Next Actions")
+         "* NEXT %?\n  %i\n  %a")
+        ("p" "Project" entry (file+headline "~/org/projects.org" "Projects")
+         "* PROJ %? [/]\n  %i\n  %a\n** TODO First step")
+        ("w" "Work Log" entry (file+datetree "~/org/work-log.org")
+         "* %?\nEntered on %U\n  %i\n  %a")
+        ("j" "Journal" entry (file+datetree "~/org/journal.org")
+         "* %?\nEntered on %U\n  %i\n  %a")
+        ("i" "Idea" entry (file+headline "~/org/ideas.org" "Ideas")
+         "* IDEA %?\n  %i\n  %a")
+        ("m" "Meeting" entry (file+headline "~/org/meetings.org" "Meetings")
+         "* MEETING with %? :meeting:\n  %U")
+        ("h" "Habit" entry (file+headline "~/org/habits.org" "Habits")
+         "* TODO %?\n  SCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n  :PROPERTIES:\n  :STYLE: habit\n  :REPEAT_TO_STATE: TODO\n  :END:\n  %U\n  %a\n  %i")
+        ("r" "Review" entry (file+datetree "~/org/reviews.org")
+         "* Review: %?\n  %U\n  %i")))
+
+;; display remote image in markdown
+(setq markdown-display-remote-images t)
+
+(add-hook 'org-mode-hook #'org-modern-mode)
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+;; configure doom-modeline
+(use-package doom-modeline
+  :straight t
   :init
-  (global-corfu-mode)
+  (doom-modeline-mode 1)
   :custom
-  (corfu-auto t)
-  (corfu-separator ?\s)
-  (corfu-quit-at-boundary nil)
-  (corfu-quit-no-match t)
-  (corfu-preview-current nil)
-  (corfu-preselect-first nil)
-  (corfu-on-exact-match nil)
-  (corfu-echo-documentation nil)
-  (corfu-scroll-margin 5))
+  (doom-modeline-height 15))
 
-;; Flymake 配置
-(use-package flymake
-  :ensure t
-  :hook (eglot-managed-mode . flymake-mode)
-  :bind (nil
-         :map flymake-mode-map
-         ("C-c C-p" . flymake-goto-prev-error)
-         ("C-c C-n" . flymake-goto-next-error))
-  :config
-  (set-face-background 'flymake-errline "red4")
-  (set-face-background 'flymake-warnline "DarkOrange"))
+(use-package json-reformat
+  :straight t)
 
-(use-package flymake-diagnostic-at-point
-  :ensure t
-  :after flymake
-  :config
-  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
-
-;; Eldoc 配置
-(use-package eldoc
+;; fanyi
+(use-package fanyi
+  :straight t
   :custom
-  (eldoc-echo-area-use-multiline-p nil))
-
-;; Hideshow 配置
-(use-package hideshow
-  :hook (prog-mode . hs-minor-mode))
-
-;; Tree-sitter 配置 (Emacs 29+)
-(when (>= emacs-major-version 29)
-  (use-package treesit
-    :config
-    (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)))
-
-;; Helpful 配置
-(use-package helpful
-  :bind
-  ([remap describe-function] . helpful-callable)
-  ([remap describe-variable] . helpful-variable)
-  ([remap describe-key] . helpful-key))
-
-;; 性能优化
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
-(setq gc-cons-threshold 100000000)
-(setq create-lockfiles nil)
-
-;; 自动格式化
-(add-hook 'before-save-hook 'eglot-format-buffer)
-
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))  ; or lsp-deferred
-
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-font-lock-level 4)
-  :config
-  (setq treesit-auto-install 'prompt)
-  (global-treesit-auto-mode))
-
-(use-package flymake-ruff
-  :ensure t
-  :hook (eglot-managed-mode-hook . (lambda ()
-                                     (when (derived-mode-p 'python-mode 'python-ts-mode)
-                                       (flymake-ruff-load))))
-  :config
-  (setq flymake-ruff--default-configs '("ruff.toml" ".ruff.toml")))
-
-(use-package reformatter
-  :hook
-  (python-mode-hook . ruff-format-on-save-mode)
-  :config
-  (reformatter-define ruff-format
-    :program "ruff"
-    :args `("format" "--stdin-filename", buffer-file-name "-")))
-
-(defun ruff-fix-buffer ()
-  "Use ruff to fix lint violations in the current buffer."
-  (interactive)
-  (let* ((temporary-file-directory (if (buffer-file-name)
-                                       (file-name-directory (buffer-file-name))
-                                     temporary-file-directory))
-         (temporary-file-name-suffix (format "--%s" (if (buffer-file-name)
-                                                                 (file-name-nondirectory (buffer-file-name))
-                                                                "")))
-         (temp-file (make-temp-file "temp-ruff-" nil temporary-file-name-suffix))
-         (current-point (point)))
-    (write-region (point-min) (point-max) temp-file nil)
-    (shell-command-to-string (format "ruff check --fix %s" temp-file))
-    (erase-buffer)
-    (insert-file-contents temp-file)
-    (delete-file temp-file)
-    (goto-char current-point)))
+  (fanyi-providers '(;; 海词
+                     fanyi-haici-provider
+                     ;; 有道同义词词典
+                     fanyi-youdao-thesaurus-provider
+                     ;; Etymonline
+                     fanyi-etymon-provider
+                     ;; Longman
+                     fanyi-longman-provider)))
 
 
-(defun ruff-fix-before-save ()
-  (interactive)
-  (when (memq major-mode '(python-mode python-ts-mode))
-    (ruff-fix-buffer)))
+;; puml setup
+;; (setq plantuml-jar-path "/Users/hang.gao/plantuml.jar")
+;; (setq plantuml-default-exec-mode 'jar)
 
-(add-hook 'before-save-hook 'ruff-fix-before-save)
+;; display inline images
+(defun org-display-inline-images (&optional include-linked refresh beg end)
+  "Display inline images.
+
+An inline image is a link which follows either of these
+conventions:
+
+  1. Its path is a file with an extension matching return value
+     from `image-file-name-regexp' and it has no contents.
+
+  2. Its description consists in a single link of the previous
+     type.  In this case, that link must be a well-formed plain
+     or angle link, i.e., it must have an explicit \"file\" type.
+
+Equip each image with the key-map `image-map'.
+
+When optional argument INCLUDE-LINKED is non-nil, also links with
+a text description part will be inlined.  This can be nice for
+a quick look at those images, but it does not reflect what
+exported files will look like.
+
+When optional argument REFRESH is non-nil, refresh existing
+images between BEG and END.  This will create new image displays
+only if necessary.
+
+BEG and END define the considered part.  They default to the
+buffer boundaries with possible narrowing."
+  (interactive "P")
+  (when (display-graphic-p)
+    (unless refresh
+      (org-remove-inline-images)
+      (when (fboundp 'clear-image-cache) (clear-image-cache)))
+    (let ((end (or end (point-max))))
+      (org-with-point-at (or beg (point-min))
+        (let* ((case-fold-search t)
+	       (file-extension-re (image-file-name-regexp))
+	       (link-abbrevs (mapcar #'car
+                                     (append org-link-abbrev-alist-local
+                                             org-link-abbrev-alist)))
+	       ;; Check absolute, relative file names and explicit
+	       ;; "file:" links.  Also check link abbreviations since
+	       ;; some might expand to "file" links.
+	       (file-types-re
+                (format "\\[\\[\\(?:file%s:\\|attachment:\\|[./~]\\)\\|\\]\\[\\(<?file:\\)"
+                        (if (not link-abbrevs) ""
+                          (concat "\\|" (regexp-opt link-abbrevs))))))
+          (while (re-search-forward file-types-re end t)
+            (let* ((link (org-element-lineage
+                          (save-match-data (org-element-context))
+                          '(link) t))
+                   (linktype (org-element-property :type link))
+                   (inner-start (match-beginning 1))
+                   (path
+                    (cond
+                     ;; No link at point; no inline image.
+                     ((not link) nil)
+                     ;; File link without a description.  Also handle
+                     ;; INCLUDE-LINKED here since it should have
+                     ;; precedence over the next case.  I.e., if link
+                     ;; contains filenames in both the path and the
+                     ;; description, prioritize the path only when
+                     ;; INCLUDE-LINKED is non-nil.
+                     ((or (not (org-element-property :contents-begin link))
+                          include-linked)
+                      (and (or (equal "file" linktype)
+			       (equal "attachment" linktype))
+                           (org-element-property :path link)))
+                     ;; Link with a description.  Check if description
+                     ;; is a filename.  Even if Org doesn't have syntax
+                     ;; for those -- clickable image -- constructs, fake
+                     ;; them, as in `org-export-insert-image-links'.
+                     ((not inner-start) nil)
+                     (t
+                      (org-with-point-at inner-start
+                        (and (looking-at
+                              (if (char-equal ?< (char-after inner-start))
+                                  org-link-angle-re
+                                org-link-plain-re))
+                             ;; File name must fill the whole
+                             ;; description.
+                             (= (org-element-property :contents-end link)
+                                (match-end 0))
+                             (match-string 2)))))))
+              (when (and path (string-match-p file-extension-re path))
+                (let ((file (if (equal "attachment" linktype)
+                                (progn
+                                  (require 'org-attach)
+                                  (ignore-errors (org-attach-expand path)))
+			      (expand-file-name path))))
+                  (when (and file (file-exists-p file))
+                    (let ((width
+                           ;; Apply `org-image-actual-width' specifications.
+                           (cond
+
+                            ;; if org-image-actual-width is true, return nil
+                            ((eq org-image-actual-width t) nil)
+
+                            ((listp org-image-actual-width)
+                             (or
+                              ;; First try to find a width among
+                              ;; attributes associated to the paragraph
+                              ;; containing link.
+                              (pcase (org-element-lineage link '(paragraph))
+                                (`nil nil)
+                                (p
+                                 (let* ((case-fold-search t)
+                                        (end (org-element-property :post-affiliated p))
+                                        (re "^[ \t]*#\\+attr_.*?: +.*?:width +\\(\\S-+\\)"))
+                                   (when (org-with-point-at
+                                             (org-element-property :begin p)
+                                           (re-search-forward re end t))
+                                     (string-to-number (match-string 1))))))
+                              ;; Otherwise, fall-back to provided number.
+                              (car org-image-actual-width)))
+
+                            ((numberp org-image-actual-width) (let* (
+                                                                     ;; get the image dimensions
+                                                                     (this-image-dimensions (image-size (create-image file) t nil))
+                                                                     (actual-width (car this-image-dimensions))
+                                                                     (actual-height (cdr this-image-dimensions))
+                                                                     ;; calculate the aspect ratio
+                                                                     (this-aspect-ratio (/ (float actual-width) (float actual-height)))
+                                                                     ;; get the window width, and subtract 100 pixels
+                                                                     (this-window-width (- (window-pixel-width) 100))
+                                                                     ;; get the window height, and multiply it by 0.5
+                                                                     (this-window-height (* (window-pixel-height) 0.5))
+                                                                     ;; minimum of image width and window width
+                                                                     (min-width (min actual-width this-window-width))
+                                                                     ;; minimum of image height and window height
+                                                                     (min-height (min actual-height this-window-height))
+                                                                     ;; conserve aspect ratio
+                                                                     (min-width-via-height (truncate (* (float min-height) this-aspect-ratio)))
+                                                                     )
+                                                                (max (min min-width min-width-via-height org-image-actual-width) 10)))
+
+			    (t nil)))
+
+			  (old (get-char-property-and-overlay
+				(org-element-property :begin link)
+				'org-image-overlay)))
+		      (if (and (car-safe old) refresh)
+			  (image-refresh (overlay-get (cdr old) 'display))
+			(let ((image (create-image file
+						   (and (image-type-available-p 'imagemagick)
+							width 'imagemagick)
+						   nil
+						   :width width)))
+			  (when image
+			    (let ((ov (make-overlay
+				       (org-element-property :begin link)
+				       (progn
+					 (goto-char
+					  (org-element-property :end link))
+					 (skip-chars-backward " \t")
+					 (point)))))
+			      (overlay-put ov 'display image)
+			      (overlay-put ov 'face 'default)
+			      (overlay-put ov 'org-image-overlay t)
+			      (overlay-put
+			       ov 'modification-hooks
+			       (list 'org-display-inline-remove-overlay))
+			      (when (<= 26 emacs-major-version)
+				(cl-assert (boundp 'image-map))
+				(overlay-put ov 'keymap image-map))
+			      (push ov org-inline-image-overlays))))))))))))))))
+;; enable the func on org-mode-hook
+(setq org-image-actual-width 1800)
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (org-display-inline-images)))
+
+(load-theme 'spacemacs-dark)
+
+;; handle space
+(setq whitespace-display-mappings
+      '((space-mark ?\u3000 [?\u25a1])  ; 全角空格显示为方块
+	))  ; 制表符
+
+;; 启用 whitespace-mode
+(global-whitespace-mode 1)
+
+;; 设置要显示的空白字符类型
+(setq whitespace-style '(face trailing spaces tabs newline
+                        space-mark))
